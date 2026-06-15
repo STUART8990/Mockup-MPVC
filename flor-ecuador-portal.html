@@ -1,0 +1,3527 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Plataforma Flor Ecuador · Certificación</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/*
+ * ╔══════════════════════════════════════════════════════════╗
+ * ║  ÍNDICE DE ESTILOS CSS                                   ║
+ * ╠══════════════════════════════════════════════════════════╣
+ * ║  § 1   Reset & Base                                      ║
+ * ║  § 2   Variables globales (:root)                        ║
+ * ║  § 3   Demo nav                                          ║
+ * ║  § 4   Shell: navbar / page-header / footer              ║
+ * ║  § 5   Componente: Cards                                 ║
+ * ║  § 6   Componente: Botones                               ║
+ * ║  § 7   Componente: Tablas                                ║
+ * ║  § 8   Componente: Formularios                           ║
+ * ║  § 9   Componente: Tabs (Screen 2)                       ║
+ * ║  § 10  Componente: Scorecard / Planificación             ║
+ * ║  § 11  Componente: Drawer Personas PMCV                  ║
+ * ╚══════════════════════════════════════════════════════════╝
+ */
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+
+  /* ═══ § 2 · VARIABLES GLOBALES ══════════════════════════ */
+  :root {
+    --purple:       #5d2b6e;
+    --purple-hover: #4a2258;
+    --purple-light: #f3edf6;
+    --white:        #ffffff;
+    --bg:           #fafafa;
+    --border:       #dcdcdc;
+    --border-dark:  #c0c0c0;
+    --text:         #333333;
+    --muted:        #666666;
+    --muted-light:  #999999;
+    --green:        #2e7d32;
+    --green-light:  #e8f5e9;
+    --orange:       #e65100;
+    --orange-light: #fff3e0;
+    --blue-light:   #e3f2fd;
+    --blue:         #1565c0;
+    --row-alt:      #f7f7f7;
+    --shadow:       0 1px 3px rgba(0,0,0,0.08);
+  }
+
+  body {
+    font-family: 'IBM Plex Sans', Arial, sans-serif;
+    font-size: 13.5px;
+    color: var(--text);
+    background: var(--bg);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* ── HEADER ── */
+  .header {
+    background: var(--white);
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 28px;
+    height: 58px;
+    flex-shrink: 0;
+  }
+  .header-logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .logo-seal {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    border: 2px solid var(--purple);
+    background: var(--white);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    flex-shrink: 0;
+  }
+  .logo-seal svg { width: 22px; height: 22px; }
+  .logo-text {
+    display: flex;
+    flex-direction: column;
+    line-height: 1.2;
+  }
+  .logo-text .brand { font-size: 11px; font-weight: 700; color: var(--purple); letter-spacing: 0.5px; text-transform: uppercase; }
+  .logo-text .sub   { font-size: 10px; color: var(--muted); letter-spacing: 0.3px; }
+  .header-user {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+  }
+  .user-badge {
+    width: 30px; height: 30px;
+    background: var(--purple);
+    color: #fff;
+    border-radius: 2px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 12px; font-weight: 700; letter-spacing: 0.5px;
+  }
+  .user-info { display: flex; flex-direction: column; line-height: 1.25; }
+  .user-info .uname { font-size: 12px; font-weight: 600; color: var(--text); }
+  .user-info .urole { font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.4px; }
+
+  /* ── NAVBAR ── */
+
+  /* ═══ § 4 · SHELL: NAVBAR / PAGE-HEADER / FOOTER ════════ */
+  .navbar {
+    background: var(--purple);
+    display: flex;
+    align-items: stretch;
+    padding: 0 28px;
+    height: 42px;
+    flex-shrink: 0;
+  }
+  .navbar a {
+    display: flex; align-items: center;
+    color: rgba(255,255,255,0.82);
+    text-decoration: none;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.6px;
+    text-transform: uppercase;
+    padding: 0 16px;
+    border-bottom: 2px solid transparent;
+    transition: color 0.15s, border-color 0.15s;
+    cursor: pointer;
+  }
+  .navbar a:hover { color: #fff; }
+  .navbar a.active { color: #fff; border-bottom-color: #fff; }
+
+  /* ── SCREEN TOGGLE ── */
+  .screen { display: none; flex-direction: column; flex: 1; }
+  .screen.visible { display: flex; }
+
+  /* ── PAGE HEADER ── */
+  .page-header {
+    background: var(--white);
+    border-bottom: 1px solid var(--border);
+    padding: 16px 28px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .page-title { font-size: 19px; font-weight: 700; color: var(--text); }
+  .page-back {
+    font-size: 12px; color: var(--purple); text-decoration: none; font-weight: 500;
+    display: flex; align-items: center; gap: 4px; margin-top: 4px;
+    cursor: pointer;
+  }
+  .page-back:hover { text-decoration: underline; }
+  .page-actions { display: flex; gap: 8px; }
+
+  /* ── BUTTONS ── */
+
+  /* ═══ § 6 · COMPONENTE: BOTONES ═════════════════════════ */
+  .btn {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 7px 16px;
+    font-family: 'IBM Plex Sans', Arial, sans-serif;
+    font-size: 12px; font-weight: 600;
+    letter-spacing: 0.3px;
+    border-radius: 2px;
+    cursor: pointer;
+    border: 1px solid transparent;
+    transition: background 0.15s, color 0.15s, border-color 0.15s;
+    text-transform: uppercase;
+  }
+  .btn-primary { background: var(--purple); color: #fff; border-color: var(--purple); }
+  .btn-primary:hover { background: var(--purple-hover); border-color: var(--purple-hover); }
+  .btn-outline { background: var(--white); color: var(--muted); border-color: var(--border-dark); }
+  .btn-outline:hover { background: #f0f0f0; }
+  .btn-sm { padding: 5px 12px; font-size: 11.5px; }
+  .btn-xs { padding: 3px 9px; font-size: 11px; }
+  .btn-icon { background: none; border: none; cursor: pointer; color: var(--purple); padding: 2px 4px; }
+
+  /* ── CONTENT AREA ── */
+  .content { padding: 22px 28px; display: flex; flex-direction: column; gap: 20px; flex: 1; }
+
+  /* ── CARDS ── */
+
+  /* ═══ § 5 · COMPONENTE: CARDS ═══════════════════════════ */
+  .card {
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: 2px;
+    box-shadow: var(--shadow);
+  }
+  .card-header {
+    background: #f2f2f2;
+    border-bottom: 1px solid var(--border);
+    padding: 10px 16px;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .card-header h3 {
+    font-size: 11.5px; font-weight: 700; color: var(--muted);
+    text-transform: uppercase; letter-spacing: 0.8px;
+  }
+  .card-body { padding: 16px; }
+
+  /* ── TWO-COLUMN LAYOUT ── */
+  .two-col   { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+  .three-col { display: grid; grid-template-columns: 1.4fr 1fr 1.2fr; gap: 20px; }
+
+  /* ── INFO GRID ── */
+  .info-grid { display: grid; grid-template-columns: 220px 1fr; gap: 0; }
+  .info-row {
+    display: contents;
+  }
+  .info-label {
+    padding: 10px 14px;
+    font-size: 12.5px; color: var(--muted);
+    border-bottom: 1px solid #f0f0f0;
+  }
+  .info-value {
+    padding: 10px 14px;
+    font-size: 12.5px; font-weight: 600; color: var(--text);
+    border-bottom: 1px solid #f0f0f0;
+    text-transform: uppercase;
+  }
+  .info-label:last-of-type, .info-value:last-of-type { border-bottom: none; }
+
+  /* ── STATUS INDICATOR ── */
+  .status-dot {
+    display: inline-block; width: 8px; height: 8px;
+    border-radius: 50%; margin-right: 5px; flex-shrink: 0;
+  }
+  .dot-green  { background: var(--green); }
+  .dot-orange { background: var(--orange); }
+  .dot-gray   { background: #aaa; }
+  .status-row { display: flex; align-items: center; gap: 6px; padding: 9px 0; border-bottom: 1px solid #f0f0f0; }
+  .status-row:last-child { border-bottom: none; }
+  .status-label { font-size: 12.5px; color: var(--muted); width: 145px; flex-shrink: 0; }
+  .status-val   { font-size: 12.5px; font-weight: 600; color: var(--text); display: flex; align-items: center; }
+
+  /* ── DOCUMENT LIST ── */
+  .doc-item {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 10px 0; border-bottom: 1px solid #f0f0f0;
+  }
+  .doc-item:last-child { border-bottom: none; }
+  .doc-name { font-size: 12.5px; font-weight: 600; color: var(--text); display: flex; align-items: center; gap: 7px; }
+  .doc-actions { display: flex; align-items: center; gap: 7px; }
+  .icon-check  { color: var(--green); font-size: 14px; }
+  .icon-warn   { color: var(--orange); font-size: 14px; }
+
+  /* ── TABLE ── */
+  .table-wrap { overflow-x: auto; }
+
+  /* ═══ § 7 · COMPONENTE: TABLAS ══════════════════════════ */
+  table {
+    width: 100%; border-collapse: collapse;
+    font-size: 12px;
+  }
+  thead th {
+    background: #f2f2f2;
+    border-bottom: 2px solid var(--border-dark);
+    border-right: 1px solid var(--border);
+    padding: 9px 12px;
+    text-align: left;
+    font-size: 11px; font-weight: 700; color: var(--muted);
+    text-transform: uppercase; letter-spacing: 0.6px;
+    white-space: nowrap;
+  }
+  thead th:last-child { border-right: none; }
+  tbody tr { border-bottom: 1px solid var(--border); }
+  tbody tr:nth-child(even) { background: var(--row-alt); }
+  tbody tr:hover { background: var(--purple-light); }
+  tbody td {
+    padding: 8px 12px;
+    border-right: 1px solid var(--border);
+    vertical-align: middle;
+  }
+  tbody td:last-child { border-right: none; }
+  .td-code { font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: var(--purple); font-weight: 500; }
+
+  /* ── INLINE INPUT ── */
+  .inline-input {
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: 2px;
+    padding: 3px 6px;
+    font-size: 12px; font-family: inherit; color: var(--text);
+    width: 100%;
+  }
+  .inline-input:focus { outline: none; border-color: var(--purple); }
+
+  /* ── CHECKBOX ── */
+  input[type="checkbox"] {
+    width: 14px; height: 14px; cursor: pointer; accent-color: var(--purple);
+  }
+
+  /* ── ALERT BANNERS ── */
+  .alert {
+    border-radius: 2px;
+    padding: 9px 12px;
+    font-size: 12px;
+    display: flex; align-items: flex-start; gap: 8px;
+    border-left: 3px solid;
+  }
+  .alert-blue  { background: var(--blue-light); border-left-color: var(--blue); color: var(--blue); }
+  .alert-icon  { font-size: 14px; flex-shrink: 0; margin-top: 0; }
+  .alert-text  { color: var(--text); font-size: 12px; }
+
+  /* ── FOOTER BUTTONS BAR ── */
+  .action-bar {
+    margin-top: 4px;
+    border: 1px dashed var(--border-dark);
+    border-radius: 2px;
+    padding: 16px;
+    display: flex; align-items: center; justify-content: center; gap: 12px;
+    background: #fefefe;
+  }
+
+  /* ── TABS ── */
+
+  /* ═══ § 9 · COMPONENTE: TABS (Screen 2) ═════════════════ */
+  .tab-strip {
+    background: var(--white);
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    padding: 0 24px;
+  }
+  .tab-btn {
+    padding: 10px 20px;
+    font-size: 11.5px; font-weight: 600; font-family: inherit;
+    text-transform: uppercase; letter-spacing: 0.5px;
+    color: var(--muted);
+    background: #f0f0f0;
+    border: 1px solid var(--border);
+    border-bottom: none;
+    border-radius: 2px 2px 0 0;
+    cursor: pointer;
+    margin-right: 4px;
+    margin-top: 6px;
+    transition: background 0.12s;
+  }
+  .tab-btn:hover { background: #e8e8e8; }
+  .tab-btn.active {
+    background: var(--white);
+    color: var(--purple);
+    border-bottom: 2px solid var(--purple);
+    border-color: var(--border) var(--border) var(--white) var(--border);
+  }
+  .tab-panel { display: none; }
+  .tab-panel.active { display: block; }
+
+  /* ── FORM ── */
+  .form-section {
+    border: 1px solid var(--border);
+    border-radius: 2px;
+    margin-bottom: 14px;
+  }
+  .form-section-title {
+    background: #f2f2f2;
+    border-bottom: 1px solid var(--border);
+    padding: 6px 12px;
+    font-size: 11px; font-weight: 700; color: var(--muted);
+    text-transform: uppercase; letter-spacing: 0.8px;
+  }
+
+  /* ═══ § 8 · COMPONENTE: FORMULARIOS ═════════════════════ */
+  .form-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 14px 18px;
+    padding: 16px 14px;
+  }
+  .form-field { display: flex; flex-direction: column; gap: 5px; }
+  .form-label { font-size: 11px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 0.4px; }
+  .form-input {
+    border: 1px solid var(--border);
+    border-radius: 2px;
+    padding: 8px 10px;
+    font-size: 13px; font-family: inherit; color: var(--text);
+    background: var(--white);
+  }
+  .form-input:focus { outline: none; border-color: var(--purple); box-shadow: 0 0 0 2px rgba(93,43,110,0.08); }
+  .form-input-icon { position: relative; }
+  .form-input-icon .form-input { padding-right: 32px; }
+  .input-icon {
+    position: absolute; right: 9px; top: 50%; transform: translateY(-50%);
+    color: var(--muted-light); font-size: 14px;
+  }
+  .form-check { display: flex; align-items: center; gap: 8px; padding: 10px 12px; }
+  .form-check label { font-size: 12px; font-weight: 500; color: var(--text); cursor: pointer; }
+  .upload-zone {
+    border: 1px dashed var(--border-dark);
+    border-radius: 2px;
+    background: #fafafa;
+    padding: 14px 12px;
+    display: flex; align-items: center; gap: 10px;
+    cursor: pointer;
+    margin: 0 12px 14px;
+    transition: background 0.12s;
+  }
+  .upload-zone:hover { background: var(--purple-light); border-color: var(--purple); }
+  .upload-icon { font-size: 22px; color: var(--muted-light); }
+  .upload-text { font-size: 12px; color: var(--muted); }
+  .upload-text strong { color: var(--purple); font-weight: 600; }
+
+  .form-footer {
+    display: flex; justify-content: flex-end; gap: 8px;
+    padding: 12px 14px;
+    border-top: 1px solid var(--border);
+    background: #fafafa;
+  }
+
+  /* ── FOOTER ── */
+  .footer {
+    background: #f0f0f0;
+    border-top: 1px solid var(--border);
+    padding: 10px 24px;
+    text-align: center;
+    font-size: 10.5px;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    flex-shrink: 0;
+  }
+
+  /* ── SCREEN SWITCHER (demo nav) ── */
+
+  /* ═══ § 3 · DEMO NAV (barra de prototipo) ═══════════════ */
+  .demo-nav {
+    background: #1a1a1a;
+    padding: 6px 24px;
+    display: flex; gap: 10px; align-items: center;
+    font-size: 11px; color: #888;
+  }
+  .demo-nav span { color: #555; }
+  .demo-btn {
+    padding: 3px 10px;
+    background: #333; color: #ccc;
+    border: 1px solid #444; border-radius: 2px;
+    font-size: 11px; font-family: inherit;
+    cursor: pointer; transition: background 0.1s;
+  }
+  .demo-btn:hover, .demo-btn.active { background: #555; color: #fff; }
+
+  .edit-link { font-size: 11px; color: var(--purple); text-decoration: none; font-weight: 500; cursor: pointer; }
+  .edit-link:hover { text-decoration: underline; }
+
+  /* ── PLANIFICACIÓN TAB ── */
+  .planif-row {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 11px 14px;
+    border-bottom: 1px solid #f0f0f0;
+    gap: 12px;
+  }
+  .planif-row-calc  { background: #fafafa; }
+  .planif-row-readonly { background: #f7f7f7; }
+  .planif-row-area  { align-items: flex-start; flex-direction: column; gap: 6px; padding: 11px 14px; }
+  .planif-label {
+    font-size: 12px; color: var(--muted); flex: 1;
+    display: flex; flex-direction: column;
+  }
+  .planif-sublabel { font-size: 10.5px; color: var(--muted-light); font-weight: 400; }
+  .planif-input {
+    width: 120px; text-align: right;
+    border: 1px solid var(--border); border-radius: 2px;
+    padding: 5px 8px; font-size: 13px; font-family: 'IBM Plex Mono', monospace;
+    color: var(--text); background: var(--white); flex-shrink: 0;
+  }
+  input[type="date"].planif-input {
+    width: 160px; text-align: left; font-family: 'IBM Plex Sans', Arial, sans-serif;
+  }
+  .planif-input:focus { outline: none; border-color: var(--purple); }
+  .planif-calc {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 14px; font-weight: 700; flex-shrink: 0;
+  }
+  .planif-calc.green  { color: var(--green); }
+  .planif-calc.purple { color: var(--purple); }
+  .planif-readonly {
+    font-size: 14px; font-weight: 700; color: var(--text);
+    font-family: 'IBM Plex Mono', monospace; flex-shrink: 0;
+  }
+  .planif-divider {
+    height: 1px; background: var(--border-dark);
+    margin: 2px 12px;
+  }
+
+  /* ── Familias PMCV — tabla mensual ── */
+  .familias-table { width:100%; border-collapse:collapse; font-size:12px; }
+  .familias-table thead th {
+    background:#f5f0f8; color:var(--purple); font-weight:700;
+    padding:7px 12px; text-align:left; border-bottom:2px solid #d9c9e4;
+    font-size:11px; letter-spacing:.4px; text-transform:uppercase;
+  }
+  .familias-table thead th:not(:first-child) { text-align:center; }
+  .familias-table tbody tr { border-bottom:1px solid var(--border); }
+  .familias-table tbody tr:hover { background:#faf5fd; }
+  .familias-table tbody tr.mes-pasado { background:#fafafa; }
+  .familias-table tbody tr.mes-actual { background:#f5f0f8; }
+  .familias-table td { padding:6px 12px; vertical-align:middle; }
+  .familias-table td:not(:first-child) { text-align:center; }
+  .familias-table tfoot td {
+    padding:8px 12px; font-weight:700; font-size:12px;
+    background:#f5f0f8; border-top:2px solid #d9c9e4;
+  }
+  .familias-table tfoot td:not(:first-child) { text-align:center; }
+  .fam-input {
+    width:72px; text-align:center; padding:3px 6px;
+    border:1px solid var(--border); border-radius:2px;
+    font-size:12px; font-family:'IBM Plex Mono',monospace;
+    font-weight:600; color:var(--text);
+    background:#fff;
+  }
+  .fam-input:focus { outline:none; border-color:var(--purple); }
+  .fam-input:read-only { background:#f5f5f5; color:var(--muted); cursor:default; }
+  /* 3 estados de familias */
+  .fam-badge {
+    display:inline-flex; align-items:center; gap:4px;
+    padding:2px 8px; border-radius:2px;
+    font-size:10.5px; font-weight:700; white-space:nowrap;
+  }
+  .fam-aldia    { background:#eafaf1; color:#1e8449; }
+  .fam-proceso  { background:#fef9e7; color:#b7770d; }
+  .fam-retraso  { background:#fdf2f2; color:#c0392b; }
+  .fam-completo { background:#f3eaf7; color:var(--purple); }
+
+  /* Badges genéricos */
+  .badge {
+    display:inline-flex; align-items:center;
+    padding:2px 9px; border-radius:20px;
+    font-size:11px; font-weight:700; white-space:nowrap;
+  }
+  .badge-green  { background:#eafaf1; color:#1e8449; }
+  .badge-yellow { background:#fef9e7; color:#b7770d; }
+  .badge-gray   { background:#f0f0f0; color:#777; }
+  .badge-warn   { background:#fef6ec; color:#e67e22; }
+  .badge-info   { background:#eaf3fb; color:#1a6fa3; }
+  .badge-ok     { background:#eafaf1; color:#1e8449; }
+  .badge-err    { background:#fdf2f2; color:#c0392b; }
+  .fam-pendiente{ background:#f5f5f5; color:#9e9e9e; }
+  /* scorecards resumen familias */
+  .fam-summary {
+    display:grid; grid-template-columns:1fr 1fr 1fr 1fr;
+    border-bottom:1px solid var(--border);
+  }
+  .fam-summary-item {
+    padding:14px 16px; text-align:center;
+    border-right:1px solid var(--border);
+  }
+  .fam-summary-item:last-child { border-right:none; }
+  .fam-summary-val {
+    font-size:22px; font-weight:700; font-family:'IBM Plex Mono',monospace;
+    line-height:1.1; margin-bottom:3px;
+  }
+  .fam-summary-lbl { font-size:10.5px; color:var(--muted); text-transform:uppercase; letter-spacing:.4px; }
+  .planif-textarea {
+    width: 100%; border: 1px solid var(--border); border-radius: 2px;
+    padding: 7px 9px; font-size: 12px; font-family: inherit; color: var(--text);
+    background: var(--white); resize: vertical; min-height: 68px;
+  }
+  .planif-textarea:focus { outline: none; border-color: var(--purple); }
+
+  /* ── SCORECARD ── */
+
+  /* ═══ § 10 · COMPONENTE: SCORECARD / PLANIF ════════════ */
+  .scorecard {
+    display: flex; align-items: stretch;
+    border-bottom: 1px solid var(--border);
+  }
+  .scorecard-item {
+    flex: 1; padding: 20px 14px;
+    display: flex; flex-direction: column; align-items: center; gap: 5px;
+  }
+  .scorecard-label { font-size: 11px; text-transform: uppercase; letter-spacing: 0.6px; color: var(--muted); font-weight: 600; }
+  .scorecard-value { font-size: 30px; font-weight: 700; font-family: 'IBM Plex Mono', monospace; line-height: 1.1; }
+  .scorecard-sub   { font-size: 10.5px; color: var(--muted-light); }
+  .scorecard-divider { width: 1px; background: var(--border); flex-shrink: 0; margin: 10px 0; }
+
+  select.form-input {
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%23999'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 9px center;
+    padding-right: 26px;
+  }
+
+
+  /* ═══ § 11 · COMPONENTE: DRAWER PERSONAS PMCV ══════════ */
+  /* ── MENTOR DRAWER (slide-over) ── */
+  .drawer-overlay {
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,.38);
+    z-index: 900;
+    opacity: 0; pointer-events: none;
+    transition: opacity .25s ease;
+  }
+  .drawer-overlay.open { opacity: 1; pointer-events: all; }
+
+  .drawer {
+    position: fixed; top: 0; right: 0; bottom: 0;
+    width: 480px; max-width: 96vw;
+    background: #fff;
+    box-shadow: -4px 0 24px rgba(0,0,0,.15);
+    z-index: 901;
+    display: flex; flex-direction: column; overflow: hidden;
+    transform: translateX(100%);
+    transition: transform .28s cubic-bezier(.4,0,.2,1);
+  }
+  .drawer.open { transform: translateX(0); }
+
+  .drawer-header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--border);
+    background: var(--purple);
+    color: #fff;
+  }
+  .drawer-header h3 { margin:0; font-size:15px; font-weight:600; }
+  .drawer-close {
+    background: none; border: none; color: #fff; cursor: pointer;
+    padding: 4px; border-radius: 4px; line-height:1;
+    opacity:.8; transition: opacity .15s;
+  }
+  .drawer-close:hover { opacity:1; background:rgba(255,255,255,.15); }
+
+  .drawer-body { flex:1; overflow-y:auto; padding:20px; }
+
+  .drawer-section-title {
+    font-size:11px; font-weight:700; letter-spacing:.8px;
+    text-transform:uppercase; color:var(--muted);
+    margin: 0 0 10px;
+  }
+
+  .finca-selector {
+    display: flex; gap: 8px; margin-bottom: 20px;
+  }
+  .finca-selector select {
+    flex:1; padding:8px 10px; border:1px solid var(--border);
+    border-radius:4px; font-size:13px; color:var(--text);
+    font-family: inherit;
+  }
+
+  .mentor-card {
+    border: 1px solid var(--border); border-radius:6px;
+    margin-bottom:10px; overflow:hidden;
+  }
+  .mentor-card-header {
+    display:flex; align-items:center; gap:10px;
+    padding:10px 14px;
+    background:#fafafa;
+    border-bottom:1px solid var(--border);
+  }
+  .mentor-avatar {
+    width:34px; height:34px; border-radius:50%;
+    background:var(--purple); color:#fff;
+    display:flex; align-items:center; justify-content:center;
+    font-size:13px; font-weight:700; flex-shrink:0;
+  }
+  .mentor-name { font-weight:600; font-size:13px; color:var(--text); }
+  .mentor-role { font-size:11px; color:var(--muted); }
+  .mentor-card-body { padding:10px 14px; }
+
+  .finca-chip {
+    display:inline-flex; align-items:center; gap:5px;
+    background:var(--purple-light,#f0e8f4); color:var(--purple);
+    border-radius:12px; padding:3px 9px; font-size:11.5px;
+    font-weight:600; margin:3px 3px 3px 0;
+  }
+  .finca-chip button {
+    background:none; border:none; color:var(--purple);
+    cursor:pointer; padding:0; line-height:1; font-size:13px;
+    opacity:.6; transition:opacity .15s;
+  }
+  .finca-chip button:hover { opacity:1; }
+
+  .assign-row {
+    display:flex; gap:8px; margin-top:10px; padding-top:10px;
+    border-top:1px solid var(--border);
+  }
+  .assign-row select {
+    flex:1; padding:6px 8px; border:1px solid var(--border);
+    border-radius:4px; font-size:12px; color:var(--text); font-family:inherit;
+  }
+  .assign-row .btn { white-space:nowrap; }
+
+  .drawer-empty {
+    text-align:center; padding:32px 16px; color:var(--muted);
+  }
+  .drawer-empty svg { opacity:.3; margin-bottom:10px; }
+
+  /* ── Selección de personas (Carmine style) ── */
+  .persona-check-wrap {
+    display:flex; align-items:center; justify-content:center;
+    width:32px; flex-shrink:0;
+  }
+  /* Ocultar checkbox nativo, mostrar custom */
+  .persona-check-wrap input[type="checkbox"] {
+    appearance:none; -webkit-appearance:none;
+    width:16px; height:16px; flex-shrink:0;
+    border:2px solid #c8b8d4; border-radius:3px;
+    background:#fff; cursor:pointer;
+    transition:background .15s, border-color .15s;
+    position:relative;
+  }
+  .persona-check-wrap input[type="checkbox"]:checked {
+    background:var(--purple); border-color:var(--purple);
+  }
+  .persona-check-wrap input[type="checkbox"]:checked::after {
+    content:''; position:absolute;
+    left:3px; top:0px; width:5px; height:9px;
+    border:2px solid #fff; border-top:none; border-left:none;
+    transform:rotate(45deg);
+  }
+  .mentor-card.seleccionable { cursor:pointer; transition:box-shadow .15s, border-color .15s; }
+  .mentor-card.seleccionable:hover { border-color:var(--purple); box-shadow:0 0 0 2px rgba(93,43,110,.12); }
+  .mentor-card.seleccionada { border-color:var(--purple); background:#faf5fd; box-shadow:0 0 0 2px rgba(93,43,110,.18); }
+  .mentor-card.seleccionada .mentor-card-header { background:#f3eaf7; }
+
+  /* ── Barra flotante de acción (bottom del drawer) ── */
+  .drawer-action-bar {
+    position:sticky; bottom:0;
+    background:var(--purple); color:#fff;
+    padding:10px 16px;
+    display:none; align-items:center; justify-content:space-between; gap:10px;
+    border-top:2px solid rgba(255,255,255,.2);
+    animation: slideUp .2s ease;
+  }
+  .drawer-action-bar.visible { display:flex; }
+  @keyframes slideUp { from{transform:translateY(8px);opacity:0} to{transform:translateY(0);opacity:1} }
+  .drawer-action-bar .sel-count {
+    font-size:13px; font-weight:600;
+  }
+  .drawer-action-bar .btn-send {
+    background:#fff; color:var(--purple); border:none;
+    padding:6px 14px; border-radius:4px; font-size:12px; font-weight:700;
+    cursor:pointer; display:flex; align-items:center; gap:6px;
+    transition:opacity .15s;
+  }
+  .drawer-action-bar .btn-send:hover { opacity:.85; }
+  .drawer-action-bar .btn-clear {
+    background:none; border:1px solid rgba(255,255,255,.4); color:#fff;
+    padding:5px 10px; border-radius:4px; font-size:12px; cursor:pointer;
+  }
+
+  /* ── GeneXus 17 toggle switch ── */
+  .gx-switch-wrap {
+    display:flex; align-items:center; gap:8px;
+  }
+
+  /* ── Upload zona designación líder ── */
+  .upload-zone {
+    border:2px dashed #c8b8d4; border-radius:6px;
+    padding:24px 16px; text-align:center; cursor:pointer;
+    transition:border-color .18s, background .18s;
+    background:#faf5fd;
+  }
+  .upload-zone:hover, .upload-zone.drag { border-color:var(--purple); background:#f3eaf7; }
+  .upload-zone-icon { font-size:28px; margin-bottom:6px; }
+  .upload-zone-label { font-size:12px; font-weight:600; color:var(--purple); }
+  .upload-zone-sub   { font-size:11px; color:var(--muted); margin-top:3px; }
+  .upload-file-preview {
+    display:flex; align-items:center; gap:8px;
+    padding:10px 12px; border:1px solid var(--green);
+    border-radius:5px; background:#eafaf1; margin-top:10px;
+  }
+  .upload-file-name { font-size:12px; font-weight:600; color:#1e8449; flex:1; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .upload-file-remove { background:none; border:none; color:#c0392b; cursor:pointer; font-size:16px; line-height:1; padding:0 2px; }
+  .gx-switch {
+    position:relative; width:36px; height:20px; flex-shrink:0;
+  }
+  .gx-switch input { opacity:0; width:0; height:0; position:absolute; }
+  .gx-switch-track {
+    position:absolute; inset:0;
+    background:#d1d1d1; border-radius:20px;
+    cursor:pointer; transition:background .2s;
+  }
+  .gx-switch-track::after {
+    content:''; position:absolute;
+    left:3px; top:3px; width:14px; height:14px;
+    background:#fff; border-radius:50%;
+    box-shadow:0 1px 3px rgba(0,0,0,.25);
+    transition:transform .2s;
+  }
+  .gx-switch input:checked + .gx-switch-track { background:var(--purple); }
+  .gx-switch input:checked + .gx-switch-track::after { transform:translateX(16px); }
+  .gx-switch-label {
+    font-size:12px; font-weight:600; color:var(--muted); cursor:pointer;
+    user-select:none; transition:color .2s;
+  }
+  .gx-switch-label.on { color:var(--purple); }
+
+  /* ── Estado-picker PMCV (4 estados visuales) ── */
+  .estado-picker {
+    display:grid; grid-template-columns:1fr 1fr; gap:8px;
+  }
+  .estado-opt {
+    border:2px solid var(--border); border-radius:5px;
+    padding:10px 12px; cursor:pointer;
+    transition:border-color .15s, background .15s;
+    display:flex; align-items:flex-start; gap:9px;
+    background:#fff;
+  }
+  .estado-opt:hover { border-color:#c8b8d4; background:#faf5fd; }
+  .estado-opt.sel { background:#f3eaf7; }
+  .estado-opt.sel.s-activo     { border-color:var(--green); background:#eafaf1; }
+  .estado-opt.sel.s-inactivo   { border-color:#e67e22; background:#fef6ec; }
+  .estado-opt.sel.s-desadherido{ border-color:#e74c3c; background:#fdf2f2; }
+  .estado-opt.sel.s-sin        { border-color:#9e9e9e; background:#f5f5f5; }
+  .estado-opt-icon {
+    width:28px; height:28px; border-radius:50%;
+    display:flex; align-items:center; justify-content:center;
+    font-size:13px; flex-shrink:0; margin-top:1px;
+  }
+  .s-activo      .estado-opt-icon { background:#eafaf1; }
+  .s-inactivo    .estado-opt-icon { background:#fef6ec; }
+  .s-desadherido .estado-opt-icon { background:#fdf2f2; }
+  .s-sin         .estado-opt-icon { background:#f5f5f5; }
+  .estado-opt-label {
+    font-size:12px; font-weight:700; line-height:1.2;
+    margin-bottom:2px;
+  }
+  .s-activo      .estado-opt-label { color:var(--green); }
+  .s-inactivo    .estado-opt-label { color:#e67e22; }
+  .s-desadherido .estado-opt-label { color:#e74c3c; }
+  .s-sin         .estado-opt-label { color:#9e9e9e; }
+  .estado-opt-desc { font-size:10.5px; color:var(--muted); line-height:1.4; }
+
+  /* ── Modal de envío de correos ── */
+  .modal-overlay {
+    position:fixed; inset:0; background:rgba(0,0,0,.5);
+    z-index:1000; display:none; align-items:center; justify-content:center;
+    padding:16px;
+  }
+  .modal-overlay.open { display:flex; }
+  .modal {
+    background:#fff; border-radius:8px; width:100%; max-width:520px;
+    max-height:90vh; display:flex; flex-direction:column;
+    box-shadow:0 8px 32px rgba(0,0,0,.2);
+    animation:modalIn .22s cubic-bezier(.4,0,.2,1);
+  }
+  @keyframes modalIn { from{transform:scale(.95);opacity:0} to{transform:scale(1);opacity:1} }
+  .modal-header {
+    padding:16px 20px; border-bottom:1px solid var(--border);
+    display:flex; align-items:center; justify-content:space-between;
+    background:var(--purple); color:#fff; border-radius:8px 8px 0 0;
+  }
+  .modal-header h3 { margin:0; font-size:15px; }
+  .modal-body { padding:20px; overflow-y:auto; flex:1; }
+  .modal-footer {
+    padding:14px 20px; border-top:1px solid var(--border);
+    display:flex; gap:8px; justify-content:flex-end;
+    background:#fafafa; border-radius:0 0 8px 8px;
+  }
+
+  /* ── Preview de envío ── */
+  .envio-row {
+    display:flex; align-items:flex-start; gap:10px;
+    padding:10px 12px; border:1px solid var(--border); border-radius:6px;
+    margin-bottom:8px;
+  }
+  .envio-row.warn { border-color:#f39c12; background:#fffbf0; }
+  .envio-row.error { border-color:#e74c3c; background:#fff5f5; }
+  .envio-row.ok   { border-color:#27ae60; background:#f0faf4; }
+  .envio-status { font-size:18px; flex-shrink:0; margin-top:1px; }
+  .lider-audit-block {
+    margin-top:16px; padding:12px 14px;
+    background:#f3eaf7; border:1px solid var(--purple);
+    border-radius:6px;
+  }
+
+  /* ── Columna PMCV en tabla sucursales ── */
+  .pmcv-col { transition:opacity .2s; }
+  .pmcv-col-hidden .pmcv-col { display:none; }
+  .td-pmcv { white-space:nowrap; text-align:center; min-width:120px; }
+  /* switch mini para tabla */
+  .gx-sw-mini { position:relative; width:28px; height:16px; flex-shrink:0; }
+  .gx-sw-mini input { opacity:0; width:0; height:0; position:absolute; }
+  .gx-sw-mini-track {
+    position:absolute; inset:0; background:#d1d1d1;
+    border-radius:16px; cursor:pointer; transition:background .18s;
+  }
+  .gx-sw-mini-track::after {
+    content:''; position:absolute; left:2px; top:2px;
+    width:12px; height:12px; background:#fff; border-radius:50%;
+    box-shadow:0 1px 2px rgba(0,0,0,.2); transition:transform .18s;
+  }
+  .gx-sw-mini input:checked + .gx-sw-mini-track { background:var(--purple); }
+  .gx-sw-mini input:checked + .gx-sw-mini-track::after { transform:translateX(12px); }
+  .finca-pmcv-cell { display:flex; align-items:center; justify-content:center; gap:6px; }
+  .finca-pmcv-cell .lbl { font-size:11px; color:var(--muted); min-width:42px; text-align:left; }
+  .finca-pmcv-cell .lbl.on { color:var(--purple); font-weight:600; }
+
+  /* ─��� Resultado de envío ── */
+  .result-row {
+    display:flex; align-items:center; gap:8px;
+    padding:8px 0; border-bottom:1px solid var(--border); font-size:13px;
+  }
+  .result-row:last-child { border-bottom:none; }
+  .result-icon { font-size:16px; flex-shrink:0; }
+
+  /* ── Drawer tabs ── */
+  .drawer-tab {
+    flex:1; padding:10px 0; background:none; border:none;
+    border-bottom:2px solid transparent; cursor:pointer;
+    font-size:13px; font-weight:500; color:var(--muted);
+    transition:color .15s, border-color .15s;
+  }
+  .drawer-tab.active { color:var(--purple); border-bottom-color:var(--purple); }
+  .drawer-tab:hover:not(.active) { color:var(--text); }
+
+  /* ── Finca accordion ── */
+  .finca-block { border:1px solid var(--border); border-radius:6px; margin-bottom:10px; overflow:hidden; }
+  .finca-block-header {
+    display:flex; align-items:center; justify-content:space-between;
+    padding:10px 14px; background:#fafafa; cursor:pointer;
+    transition:background .15s;
+  }
+  .finca-block-header:hover { background:#f0e8f4; }
+  .finca-block-body { padding:0 14px 10px; display:none; }
+
+  /* ── Role slots ── */
+  .role-slot { padding:10px 0; border-bottom:1px solid var(--border); }
+  .role-slot-label {
+    display:flex; align-items:center; gap:5px;
+    font-size:11px; font-weight:700; letter-spacing:.6px;
+    text-transform:uppercase; color:var(--muted); margin-bottom:8px;
+  }
+
+  /* ── Person row ── */
+  .person-row { display:flex; align-items:center; gap:8px; margin-bottom:6px; }
+  .person-avatar {
+    width:30px; height:30px; border-radius:50%;
+    background:var(--purple); color:#fff;
+    display:flex; align-items:center; justify-content:center;
+    font-size:11px; font-weight:700; flex-shrink:0;
+  }
+  .person-info { flex:1; min-width:0; }
+  .person-name { font-size:13px; font-weight:600; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .person-sub  { font-size:11px; color:var(--muted); }
+
+  /* ── Assign empty button ── */
+  .btn-asignar-vacio {
+    display:flex; align-items:center; gap:6px; width:100%;
+    padding:7px 10px; background:#fafafa;
+    border:1px dashed var(--border); border-radius:4px;
+    color:var(--muted); font-size:12px; cursor:pointer;
+    transition:border-color .15s, color .15s, background .15s;
+  }
+  .btn-asignar-vacio:hover {
+    border-color:var(--purple); color:var(--purple); background:#f3eaf7;
+  }
+</style>
+</head>
+<body>
+
+<!-- ══════════════════════════════════════════════════════════════
+     DEMO SWITCHER BAR
+══════════════════════════════════════════════════════════════ -->
+<div class="demo-nav">
+  <span>PANTALLA:</span>
+  <button class="demo-btn active" id="btnS1" onclick="showScreen(1)">1 · Mi Empresa (Admin)</button>
+  <button class="demo-btn" id="btnS2" onclick="showScreen(2)">2 · Gestión PMCV</button>
+  <button class="demo-btn" id="btnS3" onclick="showScreen(3)">3 · Visualizador sin PMCV</button>
+</div>
+
+<!-- ══ SHARED · HEADER DEMO + NAVBAR GLOBAL ══════════════════════ -->
+<header class="header">
+  <div class="header-logo">
+    <div class="logo-seal">
+      <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="12" cy="12" r="10" stroke="#5d2b6e" stroke-width="1.5"/>
+        <path d="M8 12l3 3 5-5" stroke="#5d2b6e" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M12 4v1M12 19v1M4 12h1M19 12h1" stroke="#5d2b6e" stroke-width="1.2" stroke-linecap="round"/>
+      </svg>
+    </div>
+    <div class="logo-text">
+      <span class="brand">Certificación Flor Ecuador</span>
+      <span class="sub">Plataforma de Gestión · EXPOFLORES</span>
+    </div>
+  </div>
+  <div class="header-user">
+    <div class="user-badge">E</div>
+    <div class="user-info">
+      <span class="uname">EDISON19</span>
+      <span class="urole">Administrador</span>
+    </div>
+    <svg width="12" height="12" viewBox="0 0 12 12" fill="none" style="color:#aaa;margin-left:4px">
+      <path d="M2 4l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+    </svg>
+  </div>
+</header>
+
+<!-- ══════════════════════════════════════════════════════════════
+     SHARED NAVBAR
+══════════════════════════════════════════════════════════════ -->
+<nav class="navbar">
+  <a href="#">Administración</a>
+  <a href="#">Socios</a>
+  <a href="#">Auditoría</a>
+  <a href="#">Listas Chequeo</a>
+  <a href="#">Indicadores</a>
+  <a href="#">Reportes</a>
+  <a href="#">Reporte BI</a>
+  <a href="#">PMA</a>
+  <a href="#" class="active">Personal</a>
+</nav>
+
+<!-- ══ SCREEN 1 · MI EMPRESA (ROL: ADMINISTRADOR) ════════════════ -->
+<div class="screen visible" id="screen1">
+
+  <div class="page-header">
+    <div>
+      <h1 class="page-title">Mi Empresa</h1>
+    </div>
+    <div class="page-actions">
+      <button class="btn btn-outline">
+        <svg width="13" height="13" viewBox="0 0 14 14" fill="none"><path d="M2 10v2h10v-2M7 2v7M4.5 7l2.5 2.5L9.5 7" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        Exportar Ficha
+      </button>
+      <button class="btn btn-primary">
+        <svg width="13" height="13" viewBox="0 0 14 14" fill="none"><path d="M2 7l3.5 3.5L12 3.5" stroke="#fff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        Confirmar Todo
+      </button>
+    </div>
+  </div>
+
+  <div class="content">
+
+    <!-- FILA: 3 TARJETAS PRINCIPALES -->
+    <div class="three-col">
+
+      <!-- CARD 1: INFORMACIÓN DE MI EMPRESA -->
+      <div class="card">
+        <div class="card-header"><h3>Información de Mi Empresa</h3></div>
+        <div class="card-body" style="padding:0">
+          <div class="info-grid">
+            <div class="info-label">Razón Social</div>
+            <div class="info-value" style="font-size:12px">ASOCIACION NACIONAL DE PRODUCTORES Y EXPORTADORES DE FLORES DEL ECUADOR</div>
+            <div class="info-label">Nombre Comercial</div>
+            <div class="info-value">EXPOFLORES</div>
+            <div class="info-label">RUC</div>
+            <div class="info-value" style="font-family:'IBM Plex Mono',monospace;color:var(--purple)">1790986055001</div>
+            <div class="info-label">Dirección</div>
+            <div class="info-value" style="font-weight:400;font-size:12px;color:var(--blue)">Calle Valdivia E5-176, sector La Primavera 2, Cumbaya</div>
+            <div class="info-label">Teléfono</div>
+            <div class="info-value">0997826027</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- CARD 2: INFORMACIÓN CERTIFICACIÓN FLOR ECUADOR -->
+      <div class="card">
+        <div class="card-header"><h3>Certificación Flor Ecuador</h3></div>
+        <div class="card-body" style="padding:0">
+          <div class="info-grid">
+            <div class="info-label">Entidad Certificadora</div>
+            <div class="info-value" style="font-size:12px">BUREAU VERITAS ECUADOR S.A.</div>
+            <div class="info-label">Última Certificación</div>
+            <div class="info-value" style="display:flex;align-items:center;gap:6px">
+              <svg width="12" height="12" viewBox="0 0 14 14" fill="none"><rect x="2" y="3" width="10" height="9" rx="1" stroke="currentColor" stroke-width="1.3"/><path d="M2 6h10M5 2v2M9 2v2" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+              20/01/2022
+            </div>
+          </div>
+          <div style="padding:12px 14px;border-top:1px solid var(--border)">
+            <button class="btn btn-outline" style="width:100%;justify-content:center;gap:7px">
+              <svg width="13" height="13" viewBox="0 0 14 14" fill="none"><path d="M2 10v2h10v-2M7 2v7M4.5 7l2.5 2.5L9.5 7" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              Descargar Certificado
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- CARD 3: INFORMACIÓN GENERAL PMCV -->
+      <div class="card">
+        <div class="card-header">
+          <h3>Información General PMCV</h3>
+          <div style="display:flex;align-items:center;gap:12px">
+            <label class="gx-switch-wrap" title="Activar/desactivar inscripción PMCV">
+              <span class="gx-switch">
+                <input type="checkbox" id="switchPMCV" checked onchange="togglePMCVSwitch(this.checked)">
+                <span class="gx-switch-track"></span>
+              </span>
+              <span class="gx-switch-label on" id="switchPMCVLabel">Inscrita</span>
+            </label>
+            <a class="edit-link" id="btnEditarPMCV" onclick="abrirModalEditPMCV()" style="cursor:pointer">Editar</a>
+          </div>
+        </div>
+        <div class="card-body" style="padding:0" id="card3Body">
+          <!-- Estado y métricas -->
+          <div class="info-grid">
+            <div class="info-label">Estado de Adherencia</div>
+            <div class="info-value" id="card3Estado">
+              <span style="display:inline-flex;align-items:center;gap:5px;background:var(--green-light);color:var(--green);padding:2px 9px;border-radius:2px;font-size:11.5px;font-weight:700">
+                <span class="status-dot dot-green"></span>ACTIVO
+              </span>
+            </div>
+            <div class="info-label">Fecha de Adherencia</div>
+            <div class="info-value" id="card3FechaAdh" style="display:flex;align-items:center;gap:6px">
+              <svg width="12" height="12" viewBox="0 0 14 14" fill="none"><rect x="2" y="3" width="10" height="9" rx="1" stroke="currentColor" stroke-width="1.3"/><path d="M2 6h10M5 2v2M9 2v2" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+              20/01/2022
+            </div>
+            <div class="info-label">Líder PMCV</div>
+            <div class="info-value" style="display:flex;align-items:center;gap:7px">
+              <div id="card3LiderAvatar" style="width:22px;height:22px;border-radius:50%;background:var(--purple);color:#fff;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;flex-shrink:0">MV</div>
+              <span id="card3LiderNombre" style="font-size:12px;font-weight:600">Ing. María Vásquez</span>
+            </div>
+            <div class="info-label">Nº Mentores</div>
+            <div class="info-value" style="display:flex;align-items:center;gap:8px">
+              <span class="mentor-count-badge" style="color:var(--purple);font-family:'IBM Plex Mono',monospace;font-size:16px;font-weight:700">2</span>
+              <button class="btn btn-outline btn-xs" onclick="openMentorDrawer()" title="Gestionar personas del programa PMCV">
+                <svg width="11" height="11" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="8" cy="5" r="2.5"/><path d="M3 13c0-2.76 2.24-5 5-5s5 2.24 5 5"/><circle cx="13" cy="5" r="1.8"/><path d="M13 9.5c1.5.3 2.5 1.4 2.5 2.8"/></svg>
+                Gestionar
+              </button>
+            </div>
+          </div>
+          <!-- Documentos -->
+          <div style="border-top:1px solid var(--border);padding:0 14px">
+            <div class="doc-item">
+              <div class="doc-name"><span class="icon-check">✔</span>Acuerdo de Confidencialidad</div>
+              <button class="btn btn-outline btn-xs">
+                <svg width="10" height="10" viewBox="0 0 14 14" fill="none"><path d="M2 10v2h10v-2M7 2v7M4.5 7l2.5 2.5L9.5 7" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </button>
+            </div>
+            <div class="doc-item">
+              <div class="doc-name"><span class="icon-warn">⚠</span>Carta de Compromiso</div>
+              <button class="btn btn-primary btn-xs">Cargar</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+
+    <!-- CARD: SUCURSALES Y UNIDADES OPERATIVAS -->
+    <div class="card">
+      <div class="card-header">
+        <h3>Sucursales y Unidades Operativas</h3>
+        <button class="btn btn-primary btn-sm">+ Agregar Unidad</button>
+      </div>
+      <div class="card-body" style="padding:0">
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Código</th>
+                <th>Nombre Comercial</th>
+                <th>Nombre Finca</th>
+                <th>Dirección</th>
+                <th>Provincia</th>
+                <th>Cantón</th>
+                <th>Parroquia</th>
+                <th>Regional</th>
+                <th>Ofi.</th>
+                <th style="text-align:center" class="pmcv-col" id="thPMCV">PMCV</th>
+                <th>Acciones</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="td-code">001</td>
+                <td><input class="inline-input" value="MATRIZ" style="min-width:120px"></td>
+                <td><input class="inline-input" value="PRINCIPAL" style="min-width:120px"></td>
+                <td><input class="inline-input" value="cumbaya la primavera" style="min-width:150px"></td>
+                <td><input class="inline-input" value="PICHINCHA" style="min-width:95px"></td>
+                <td><input class="inline-input" value="QUITO" style="min-width:85px"></td>
+                <td><input class="inline-input" value="" style="min-width:85px"></td>
+                <td><select class="inline-input" style="min-width:90px"><option selected>NORTE</option><option>SUR</option><option>QUITO</option></select></td>
+                <td><input class="inline-input" value="" style="min-width:50px"></td>
+                <td class="pmcv-col td-pmcv">
+                  <div class="finca-pmcv-cell">
+                    <label class="gx-sw-mini">
+                      <input type="checkbox" checked onchange="toggleFincaPMCV('001',this.checked)">
+                      <span class="gx-sw-mini-track"></span>
+                    </label>
+                    <span class="lbl on" id="lblPMCV_001">Activa</span>
+                    <button class="btn btn-primary btn-xs" id="btnPMCV_001" onclick="showScreen(2,'001','MATRIZ')">Ver →</button>
+                  </div>
+                </td>
+                <td><button class="btn btn-outline btn-xs">✕</button></td>
+              </tr>
+              <tr>
+                <td class="td-code">002</td>
+                <td><input class="inline-input" value="FINCA 2" style="min-width:120px"></td>
+                <td><input class="inline-input" value="FINCA 2" style="min-width:120px"></td>
+                <td><input class="inline-input" value="DIRECCION" style="min-width:150px"></td>
+                <td><input class="inline-input" value="PICHINCHA" style="min-width:95px"></td>
+                <td><input class="inline-input" value="QUITO" style="min-width:85px"></td>
+                <td><input class="inline-input" value="" style="min-width:85px"></td>
+                <td><select class="inline-input" style="min-width:90px"><option>NORTE</option><option>SUR</option><option selected>QUITO</option></select></td>
+                <td><input class="inline-input" value="" style="min-width:50px"></td>
+                <td class="pmcv-col td-pmcv">
+                  <div class="finca-pmcv-cell">
+                    <label class="gx-sw-mini">
+                      <input type="checkbox" checked onchange="toggleFincaPMCV('002',this.checked)">
+                      <span class="gx-sw-mini-track"></span>
+                    </label>
+                    <span class="lbl on" id="lblPMCV_002">Activa</span>
+                    <button class="btn btn-primary btn-xs" id="btnPMCV_002" onclick="showScreen(2,'002','FINCA 2')">Ver →</button>
+                  </div>
+                </td>
+                <td><button class="btn btn-outline btn-xs">✕</button></td>
+              </tr>
+              <tr>
+                <td class="td-code">005</td>
+                <td><input class="inline-input" value="FINCA 5" style="min-width:120px"></td>
+                <td><input class="inline-input" value="FINCA 5" style="min-width:120px"></td>
+                <td><input class="inline-input" value="" style="min-width:150px"></td>
+                <td><input class="inline-input" value="" style="min-width:95px"></td>
+                <td><input class="inline-input" value="" style="min-width:85px"></td>
+                <td><input class="inline-input" value="" style="min-width:85px"></td>
+                <td><select class="inline-input" style="min-width:90px"><option selected>(Ninguno)</option><option>NORTE</option><option>SUR</option></select></td>
+                <td><input class="inline-input" value="" style="min-width:50px"></td>
+                <td class="pmcv-col td-pmcv">
+                  <div class="finca-pmcv-cell">
+                    <label class="gx-sw-mini">
+                      <input type="checkbox" onchange="toggleFincaPMCV('005',this.checked)">
+                      <span class="gx-sw-mini-track"></span>
+                    </label>
+                    <span class="lbl" id="lblPMCV_005">Inactiva</span>
+                    <button class="btn btn-outline btn-xs" id="btnPMCV_005" onclick="showScreen(2,'005','FINCA 5')" style="display:none">Ver →</button>
+                  </div>
+                </td>
+                <td><button class="btn btn-outline btn-xs">✕</button></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ACTION BAR -->
+    <div class="action-bar">
+      <button class="btn btn-primary">
+        <svg width="13" height="13" viewBox="0 0 14 14" fill="none"><path d="M2 7l3.5 3.5L12 3.5" stroke="#fff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        Guardar todos los cambios
+      </button>
+      <button class="btn btn-outline">Cancelar</button>
+    </div>
+
+  </div><!-- /content -->
+
+  <footer class="footer">
+    © 2017 – 2026 EXPOFLORES · Plataforma de Certificación Flor Ecuador · Todos los derechos reservados
+  </footer>
+</div><!-- /screen1 -->
+
+
+<!-- ══ SCREEN 2 · GESTIÓN PMCV (Mentores / Planif / Impl.) ═══════ -->
+<div class="screen" id="screen2">
+
+  <div class="page-header">
+    <div>
+      <h1 class="page-title">Gestión del Programa PMCV</h1>
+      <a class="page-back" onclick="showScreen(1)">
+        ← Volver a Mi Empresa
+      </a>
+    </div>
+    <div class="page-actions">
+      <span id="fincaBadge" style="font-size:12px;color:var(--muted);padding:6px 10px;background:#f2f2f2;border:1px solid var(--border);border-radius:2px">
+        Selecciona una finca desde la tabla
+      </span>
+    </div>
+  </div>
+
+  <!-- TAB STRIP -->
+  <div class="tab-strip">
+    <button class="tab-btn active" onclick="switchTab('tab-mentores', this)">Formación de Mentores</button>
+    <button class="tab-btn" onclick="switchTab('tab-planif', this)">Planificación del Programa</button>
+    <button class="tab-btn" onclick="switchTab('tab-impl', this)">Implementación y Seguimiento</button>
+  </div>
+
+  <div class="content">
+
+    <!-- TAB: FORMACIÓN DE MENTORES — ahora gestionada a nivel empresa -->
+    <div class="tab-panel active" id="tab-mentores">
+      <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;padding:48px 24px;text-align:center;gap:16px">
+        <div style="width:56px;height:56px;border-radius:50%;background:var(--purple-light,#f0e8f4);display:flex;align-items:center;justify-content:center;">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--purple)" stroke-width="1.8"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.58-7 8-7s8 3 8 7"/><circle cx="19" cy="7" r="2.5"/><path d="M19 11.5c2 .4 3.5 1.8 3.5 3.5"/></svg>
+        </div>
+        <div>
+          <p style="margin:0 0 6px;font-weight:600;font-size:15px;color:var(--text)">Gestión de Mentores a nivel Empresa</p>
+          <p style="margin:0;font-size:13px;color:var(--muted);max-width:380px;line-height:1.6">
+            La creación y asignación de mentores se administra desde <strong>Mi Empresa → Información General PMCV</strong>.
+            Desde ahí puedes crear mentores y asignarlos a cada finca.
+          </p>
+        </div>
+        <button class="btn btn-primary" onclick="showScreen(1);setTimeout(openMentorDrawer,200)">
+          <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="#fff" stroke-width="2"><circle cx="8" cy="5" r="3"/><path d="M2 14c0-3.3 2.7-6 6-6s6 2.7 6 6"/></svg>
+          Ir a Gestión de Mentores
+        </button>
+      </div>
+
+      <!-- Mentor list (existing) -->
+      <div class="card" style="margin-bottom:14px">
+        <div class="card-header">
+          <h3>Mentores Registrados</h3>
+          <span style="font-size:11px;color:var(--muted)">2 mentores activos</span>
+        </div>
+        <div class="card-body" style="padding:0">
+          <table>
+            <thead>
+              <tr>
+                <th>Nombre Completo</th>
+                <th>Cargo</th>
+                <th>Correo</th>
+                <th>Teléfono</th>
+                <th>Usuario</th>
+                <th>Líder</th>
+                <th>Designación</th>
+                <th>Acciones</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td style="font-weight:600">Ing. María Vásquez</td>
+                <td>Supervisora Técnica</td>
+                <td style="font-family:'IBM Plex Mono',monospace;font-size:11px">mvasquez@trigal.ec</td>
+                <td>099 876 5432</td>
+                <td class="td-code">mvasquez</td>
+                <td style="text-align:center">
+                  <span style="background:var(--purple);color:#fff;padding:2px 7px;border-radius:2px;font-size:10px;font-weight:700">LÍDER</span>
+                </td>
+                <td>
+                  <button class="btn btn-outline btn-xs">
+                    <svg width="10" height="10" viewBox="0 0 14 14" fill="none"><path d="M2 10v2h10v-2M7 2v7M4.5 7l2.5 2.5L9.5 7" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                    Ver PDF
+                  </button>
+                </td>
+                <td>
+                  <button class="btn btn-outline btn-xs">Editar</button>
+                  <button class="btn btn-outline btn-xs" style="margin-left:3px;color:#c0392b;border-color:#e0a0a0">Baja</button>
+                </td>
+              </tr>
+              <tr>
+                <td style="font-weight:600">Ing. Carlos Mejía</td>
+                <td>Agrónomo</td>
+                <td style="font-family:'IBM Plex Mono',monospace;font-size:11px">cmejia@trigal.ec</td>
+                <td>098 123 4567</td>
+                <td class="td-code">cmejia</td>
+                <td style="text-align:center">
+                  <span style="background:#e0e0e0;color:#666;padding:2px 7px;border-radius:2px;font-size:10px">—</span>
+                </td>
+                <td>
+                  <button class="btn btn-outline btn-xs">
+                    <svg width="10" height="10" viewBox="0 0 14 14" fill="none"><path d="M2 10v2h10v-2M7 2v7M4.5 7l2.5 2.5L9.5 7" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                    Ver PDF
+                  </button>
+                </td>
+                <td>
+                  <button class="btn btn-outline btn-xs">Editar</button>
+                  <button class="btn btn-outline btn-xs" style="margin-left:3px;color:#c0392b;border-color:#e0a0a0">Baja</button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- FORM: NUEVO REGISTRO DE MENTOR -->
+      <div class="card" id="mentorForm" style="display:none">
+        <div class="card-header" style="background:var(--purple)">
+          <h3 style="color:#fff;letter-spacing:0.8px">Nuevo Registro de Mentor</h3>
+          <button class="btn-icon" onclick="toggleMentorForm(false)" style="color:#fff;font-size:16px;line-height:1">×</button>
+        </div>
+
+        <!-- GRUPO 1: DATOS PERSONALES -->
+        <div class="form-section" style="margin:14px 14px 0;border:none;border-bottom:1px solid var(--border)">
+          <div class="form-section-title">1 · Datos Personales</div>
+          <div class="form-grid">
+            <div class="form-field">
+              <label class="form-label">Nombre</label>
+              <input type="text" class="form-input" placeholder="Ej: María">
+            </div>
+            <div class="form-field">
+              <label class="form-label">Apellido</label>
+              <input type="text" class="form-input" placeholder="Ej: Vásquez Torres">
+            </div>
+          </div>
+        </div>
+
+        <!-- GRUPO 2: CONTACTO Y CARGO -->
+        <div class="form-section" style="margin:0 14px;border:none;border-bottom:1px solid var(--border)">
+          <div class="form-section-title">2 · Contacto y Cargo</div>
+          <div class="form-grid">
+            <div class="form-field">
+              <label class="form-label">Correo Electrónico</label>
+              <input type="email" class="form-input" placeholder="mentor@empresa.ec">
+            </div>
+            <div class="form-field">
+              <label class="form-label">Teléfono / Celular</label>
+              <input type="tel" class="form-input" placeholder="09X XXX XXXX">
+            </div>
+            <div class="form-field">
+              <label class="form-label">Cargo en la Finca</label>
+              <input type="text" class="form-input" placeholder="Ej: Supervisor Técnico">
+            </div>
+          </div>
+        </div>
+
+        <!-- GRUPO 3: CREDENCIALES -->
+        <div class="form-section" style="margin:0 14px;border:none;border-bottom:1px solid var(--border)">
+          <div class="form-section-title">3 · Credenciales de Acceso</div>
+          <div class="form-grid">
+            <div class="form-field">
+              <label class="form-label">Usuario</label>
+              <input type="text" class="form-input" placeholder="usuario_plataforma">
+            </div>
+            <div class="form-field">
+              <label class="form-label">Contraseña</label>
+              <div class="form-input-icon">
+                <input type="password" class="form-input" placeholder="••••••••" id="passInput">
+                <span class="input-icon" style="cursor:pointer" onclick="togglePass()">
+                  <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><ellipse cx="7" cy="7" rx="5" ry="3" stroke="currentColor" stroke-width="1.3"/><circle cx="7" cy="7" r="1.5" stroke="currentColor" stroke-width="1.3"/></svg>
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- GRUPO 4: ROL Y DOCUMENTACIÓN -->
+        <div class="form-section" style="margin:0 14px;border:none">
+          <div class="form-section-title">4 · Rol y Documentación</div>
+          <div class="form-check">
+            <input type="checkbox" id="esLider">
+            <label for="esLider">¿Es Líder de Finca? — Este mentor tendrá permisos de coordinación del programa PMCV.</label>
+          </div>
+          <div class="upload-zone" onclick="this.querySelector('input').click()">
+            <span class="upload-icon">📎</span>
+            <div class="upload-text">
+              <strong>Seleccionar Archivo</strong> de Designación o arrastre aquí<br>
+              <span style="font-size:11px;color:#bbb">PDF, DOC, DOCX · Máx. 5 MB</span>
+            </div>
+            <input type="file" accept=".pdf,.doc,.docx" style="display:none">
+          </div>
+        </div>
+
+        <div class="form-footer">
+          <button class="btn btn-outline" onclick="toggleMentorForm(false)">Cancelar</button>
+          <button class="btn btn-primary">
+            <svg width="13" height="13" viewBox="0 0 14 14" fill="none"><path d="M2 7l3.5 3.5L12 3.5" stroke="#fff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            Guardar Mentor
+          </button>
+        </div>
+      </div>
+
+    </div><!-- /tab-mentores -->
+
+    <!-- TAB: PLANIFICACIÓN -->
+    <div class="tab-panel" id="tab-planif">
+
+      <!-- ROW 1: Two-column grid -->
+      <div class="two-col" style="margin-bottom:16px">
+
+        <!-- COL 1: MÉTRICAS DE ALCANCE -->
+        <div class="card">
+          <div class="card-header">
+            <h3>Métricas de Alcance y Trabajadores</h3>
+          </div>
+          <div class="card-body" style="padding:0">
+
+            <div class="planif-row">
+              <span class="planif-label">Total trabajadores Finca</span>
+              <input type="number" class="planif-input" id="totalTrab" value="200" oninput="calcAlcance()">
+            </div>
+            <div class="planif-row">
+              <span class="planif-label">Trabajadores Objetivo (Alcance)</span>
+              <input type="number" class="planif-input" id="objTrab" value="170" oninput="calcAlcance()">
+            </div>
+            <div class="planif-row planif-row-calc">
+              <span class="planif-label">% Alcance Finca</span>
+              <span class="planif-calc green" id="pctFinca">85.00%</span>
+            </div>
+
+            <div class="planif-divider"></div>
+
+            <div class="planif-row planif-row-readonly">
+              <span class="planif-label">
+                Total Trabajadores Empresa
+                <span class="planif-sublabel">(última auditoría Flor Ecuador)</span>
+              </span>
+              <span class="planif-readonly" id="totalEmpresa">450</span>
+            </div>
+            <div class="planif-row planif-row-calc" style="border-bottom:none">
+              <span class="planif-label">% Alcance de la Empresa</span>
+              <span class="planif-calc purple" id="pctEmpresa">37.78%</span>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- COL 2: CONFIGURACIÓN DE PLANIFICACIÓN -->
+        <div class="card">
+          <div class="card-header">
+            <h3>Configuración de Planificación</h3>
+          </div>
+          <div class="card-body" style="padding:0">
+
+            <div class="planif-row">
+              <span class="planif-label">Fecha Inicio</span>
+              <input type="date" class="planif-input" value="2026-02-01" style="text-align:left;padding-right:8px">
+            </div>
+            <div class="planif-row">
+              <span class="planif-label">Fecha Fin</span>
+              <input type="date" class="planif-input" value="2026-11-30" style="text-align:left;padding-right:8px">
+            </div>
+            <div class="planif-row planif-row-area">
+              <span class="planif-label" style="padding-bottom:6px">Criterio de Selección<br><span class="planif-sublabel">Grupo Objetivo</span></span>
+              <textarea class="planif-textarea" placeholder="Describa el criterio de selección del grupo objetivo para este programa...">Trabajadores de área de postcosecha y cultivo con más de 6 meses de antigüedad y que no hayan participado en programas PMCV anteriores.</textarea>
+            </div>
+
+            <div style="padding:10px 12px 12px">
+              <div class="alert alert-blue" style="align-items:flex-start">
+                <span style="font-size:16px;flex-shrink:0;margin-top:1px">🕐</span>
+                <span class="alert-text">
+                  <strong>Recordatorios Automáticos:</strong> Se enviarán correos desde el buzón de <strong>Vale</strong> con copia a <strong>Thali</strong> <em>1 mes</em> y <em>1 semana</em> antes del inicio del programa.
+                </span>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+      </div><!-- /ROW 1 -->
+
+      <!-- ROW 1.5: FAMILIAS BENEFICIADAS (mensual) -->
+      <div class="card" style="margin-bottom:16px">
+        <div class="card-header">
+          <h3>Familias Beneficiadas — Planificación Mensual</h3>
+          <div style="display:flex;align-items:center;gap:10px">
+            <div style="display:flex;align-items:center;gap:5px;font-size:11px">
+              <span class="fam-badge fam-aldia">Al día</span>
+              <span class="fam-badge fam-retraso">Con retraso</span>
+              <span class="fam-badge fam-completo">Completo</span>
+              <span class="fam-badge fam-pendiente">Pendiente</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:6px;border-left:1px solid var(--border);padding-left:10px">
+              <label style="font-size:11px;color:var(--muted);white-space:nowrap">Total planificado:</label>
+              <input type="number" id="famObjetivo" value="300" min="1"
+                style="width:68px;padding:3px 6px;border:1px solid var(--border);border-radius:2px;font-size:13px;font-family:'IBM Plex Mono',monospace;font-weight:700;text-align:center;color:var(--purple)"
+                oninput="renderFamilias()">
+              <span style="font-size:11px;color:var(--muted)">familias</span>
+              <span id="famDiffBadge" style="display:none;font-size:10.5px;padding:2px 7px;border-radius:2px;font-weight:700"></span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Scorecards resumen -->
+        <div class="fam-summary" id="famSummary">
+          <div class="fam-summary-item">
+            <div class="fam-summary-val" style="color:var(--purple)" id="famTotalPlan">—</div>
+            <div class="fam-summary-lbl">Total planificado</div>
+          </div>
+          <div class="fam-summary-item">
+            <div class="fam-summary-val" style="color:var(--green)" id="famTotalReal">—</div>
+            <div class="fam-summary-lbl">Familias actuales</div>
+          </div>
+          <div class="fam-summary-item">
+            <div class="fam-summary-val" style="color:#1565c0" id="famPct">—</div>
+            <div class="fam-summary-lbl">% Cumplimiento</div>
+          </div>
+          <div class="fam-summary-item">
+            <div class="fam-summary-val" id="famEstadoGlobal" style="font-size:14px;margin-top:4px">—</div>
+            <div class="fam-summary-lbl">Estado general</div>
+          </div>
+        </div>
+
+        <!-- Tabla mensual -->
+        <div style="overflow-x:auto">
+          <table class="familias-table" id="famTable">
+            <thead>
+              <tr>
+                <th style="width:110px">Mes</th>
+                <th>Meta mensual<br><span style="font-weight:400;text-transform:none;font-size:10px"># familias planificadas</span></th>
+                <th>Familias actuales<br><span style="font-weight:400;text-transform:none;font-size:10px"># familias reportadas</span></th>
+                <th style="width:110px">Estado</th>
+              </tr>
+            </thead>
+            <tbody id="famTbody"></tbody>
+            <tfoot>
+              <tr>
+                <td>TOTAL</td>
+                <td><span id="footPlan" style="font-family:'IBM Plex Mono',monospace">0</span></td>
+                <td><span id="footReal" style="font-family:'IBM Plex Mono',monospace">0</span></td>
+                <td><span id="footPct" style="font-family:'IBM Plex Mono',monospace;color:#1565c0">—</span></td>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+      </div><!-- /familias -->
+
+      <!-- ROW 2: Two-column grid -->
+      <div class="two-col">
+
+        <!-- LEFT: PLANIFICADO VS EJECUTADO -->
+        <div class="card">
+          <div class="card-header">
+            <h3>Planificado vs Ejecutado de Diagnósticos</h3>
+          </div>
+          <div class="card-body" style="padding:0">
+            <div class="scorecard">
+              <div class="scorecard-item">
+                <span class="scorecard-label">Planificados</span>
+                <span class="scorecard-value" style="color:var(--purple)">85</span>
+                <span class="scorecard-sub">diagnósticos</span>
+              </div>
+              <div class="scorecard-divider"></div>
+              <div class="scorecard-item">
+                <span class="scorecard-label">Ejecutados</span>
+                <span class="scorecard-value" style="color:var(--green)">42</span>
+                <span class="scorecard-sub">realizados</span>
+              </div>
+              <div class="scorecard-divider"></div>
+              <div class="scorecard-item">
+                <span class="scorecard-label">Progreso</span>
+                <span class="scorecard-value" style="color:#1565c0">49.4%</span>
+                <span class="scorecard-sub">completado</span>
+              </div>
+            </div>
+            <!-- Progress bar -->
+            <div style="padding:0 14px 14px">
+              <div style="background:#e8e8e8;border-radius:1px;height:6px;overflow:hidden">
+                <div style="width:49.4%;height:100%;background:#1565c0;border-radius:1px"></div>
+              </div>
+              <div style="display:flex;justify-content:space-between;margin-top:4px">
+                <span style="font-size:10px;color:var(--muted-light)">0</span>
+                <span style="font-size:10px;color:var(--muted-light)">85 diagnósticos planificados</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- RIGHT: ADJUNTOS Y NOTAS -->
+        <div class="card">
+          <div class="card-header">
+            <h3>Adjuntos y Notas de Correo</h3>
+          </div>
+          <div class="card-body" style="padding:12px">
+
+            <!-- Document banner -->
+            <div style="background:var(--blue-light);border:1px solid #90caf9;border-radius:2px;padding:9px 12px;display:flex;align-items:center;gap:10px;margin-bottom:12px">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" style="flex-shrink:0"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8l-6-6z" stroke="#1565c0" stroke-width="1.5" stroke-linejoin="round"/><path d="M14 2v6h6M9 13h6M9 17h4" stroke="#1565c0" stroke-width="1.5" stroke-linecap="round"/></svg>
+              <div style="flex:1;min-width:0">
+                <div style="font-size:12px;font-weight:600;color:#1565c0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">Consentimiento_Firma_Finca.docx</div>
+                <div style="font-size:10.5px;color:var(--blue);margin-top:1px">Adjunto automático en Word · Se incluye en cada correo de notificación</div>
+              </div>
+              <button class="btn btn-outline btn-xs" style="flex-shrink:0;border-color:#90caf9;color:#1565c0">
+                <svg width="11" height="11" viewBox="0 0 14 14" fill="none"><path d="M2 10v2h10v-2M7 2v7M4.5 7l2.5 2.5L9.5 7" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                Descargar
+              </button>
+            </div>
+
+            <!-- Nota de observación -->
+            <div class="form-field">
+              <label class="form-label">Nota de Observación</label>
+              <textarea class="planif-textarea" style="min-height:80px" placeholder="Escriba una nota adicional que se incluirá al final del correo de notificación automática..."></textarea>
+              <span style="font-size:10.5px;color:var(--muted-light);margin-top:3px">Esta nota se adjuntará como párrafo final en el correo de recordatorio.</span>
+            </div>
+
+          </div>
+          <div class="form-footer">
+            <button class="btn btn-outline">Cancelar</button>
+            <button class="btn btn-primary">
+              <svg width="13" height="13" viewBox="0 0 14 14" fill="none"><path d="M2 7l3.5 3.5L12 3.5" stroke="#fff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              Guardar Planificación
+            </button>
+          </div>
+        </div>
+
+      </div><!-- /ROW 2 -->
+
+    </div>
+
+    <!-- TAB: IMPLEMENTACIÓN -->
+    <div class="tab-panel" id="tab-impl">
+
+      <!-- Selector de rol (solo prototipo) -->
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;padding:10px 14px;background:#f5f0f8;border-radius:6px;border:1px solid #e0d4eb">
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="5" r="2.5" stroke="var(--purple)" stroke-width="1.3"/><path d="M2.5 12c0-2.485 2.015-4.5 4.5-4.5s4.5 2.015 4.5 4.5" stroke="var(--purple)" stroke-width="1.3" stroke-linecap="round"/></svg>
+        <span style="font-size:11.5px;font-weight:600;color:var(--purple)">Vista como:</span>
+        <label style="font-size:12px;cursor:pointer;display:flex;align-items:center;gap:4px">
+          <input type="radio" name="implRol" value="admin" checked onchange="implSetRol('admin')"> Administrador
+        </label>
+        <label style="font-size:12px;cursor:pointer;display:flex;align-items:center;gap:4px">
+          <input type="radio" name="implRol" value="auditor" onchange="implSetRol('auditor')"> Auditor
+        </label>
+      </div>
+
+      <!-- Tarjeta Plan de Acción -->
+      <div class="card" id="cardPlanAccion">
+        <div class="card-header" style="display:flex;align-items:center;justify-content:space-between">
+          <div style="display:flex;align-items:center;gap:10px">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><rect x="2" y="1" width="12" height="14" rx="1.5" fill="#f3eaf7" stroke="var(--purple)" stroke-width="1.3"/><path d="M5 5h6M5 8h6M5 11h4" stroke="var(--purple)" stroke-width="1.2" stroke-linecap="round"/></svg>
+            <h3 style="margin:0">Plan de Acción PMCV</h3>
+          </div>
+          <span id="implEstadoBadge" class="badge"></span>
+        </div>
+
+        <div class="card-body" style="display:flex;flex-direction:column;gap:20px">
+
+          <!-- ── ZONA ADMIN: configurar fecha límite ── -->
+          <div id="implZonaAdmin">
+            <div style="font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px">Configuración · Administrador</div>
+            <div style="display:flex;align-items:flex-end;gap:12px;flex-wrap:wrap">
+              <div style="flex:1;min-width:180px">
+                <label class="form-label">Fecha límite para carga del plan</label>
+                <input type="date" id="implFechaLimite" class="form-control" style="max-width:220px" onchange="implActualizarFecha()">
+              </div>
+              <button class="btn btn-primary btn-sm" onclick="implGuardarFecha()" id="btnImplGuardarFecha" style="margin-bottom:1px">
+                Guardar fecha
+              </button>
+            </div>
+            <div id="implFechaGuardadaMsg" style="display:none;font-size:12px;color:var(--green);margin-top:8px;display:flex;align-items:center;gap:6px">
+              <svg width="13" height="13" viewBox="0 0 14 14" fill="none"><path d="M2 7l3.5 3.5L12 3" stroke="var(--green)" stroke-width="1.8" stroke-linecap="round"/></svg>
+              <span id="implFechaGuardadaTxt"></span>
+            </div>
+          </div>
+
+          <hr style="border:none;border-top:1px solid var(--border);margin:0">
+
+          <!-- ── ZONA AUDITOR: subir plan ── -->
+          <div id="implZonaAuditor">
+            <div style="font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px">Carga del Plan · Auditor</div>
+
+            <!-- Estado: sin fecha configurada -->
+            <div id="implAuditorSinFecha" style="display:none;padding:16px;background:#fafafa;border:1px dashed var(--border);border-radius:6px;text-align:center;color:var(--muted);font-size:12px">
+              <svg width="20" height="20" viewBox="0 0 20 20" fill="none" style="margin-bottom:6px;display:block;margin-left:auto;margin-right:auto"><rect x="3" y="4" width="14" height="14" rx="1.5" stroke="#ccc" stroke-width="1.3"/><path d="M7 2v4M13 2v4M3 8h14" stroke="#ccc" stroke-width="1.3" stroke-linecap="round"/></svg>
+              El administrador aún no ha configurado la fecha límite
+            </div>
+
+            <!-- Estado: con fecha, pendiente de carga -->
+            <div id="implAuditorConFecha" style="display:none">
+              <div style="display:flex;align-items:center;gap:8px;padding:10px 12px;background:#fef9ec;border:1px solid #f0c040;border-radius:6px;margin-bottom:14px">
+                <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="7" r="6" stroke="#e6a817" stroke-width="1.3"/><path d="M7 4v3.5l2 2" stroke="#e6a817" stroke-width="1.3" stroke-linecap="round"/></svg>
+                <span style="font-size:12px;color:#7a5200">Fecha límite: <strong id="implFechaLimiteMostrada">—</strong></span>
+              </div>
+              <div class="upload-zone" id="implDropZone"
+                   onclick="document.getElementById('implFileInput').click()"
+                   ondragover="event.preventDefault();this.classList.add('drag')"
+                   ondragleave="this.classList.remove('drag')"
+                   ondrop="implHandleDrop(event)">
+                <div class="upload-zone-icon">📋</div>
+                <div class="upload-zone-label">Haz clic o arrastra el Plan de Acción aquí</div>
+                <div class="upload-zone-sub">Solo PDF · máx. 20 MB</div>
+              </div>
+              <input type="file" id="implFileInput" accept=".pdf" style="display:none" onchange="implHandleFile(this.files[0])">
+              <div id="implFilePreview" style="display:none" class="upload-file-preview">
+                <svg width="16" height="16" viewBox="0 0 14 14" fill="none"><rect x="2" y="1" width="10" height="12" rx="1.5" fill="#e74c3c" opacity=".15" stroke="#e74c3c" stroke-width="1.2"/><path d="M4 5h6M4 7h6M4 9h4" stroke="#e74c3c" stroke-width="1.1" stroke-linecap="round"/></svg>
+                <span class="upload-file-name" id="implFileName">—</span>
+                <button class="upload-file-remove" onclick="implQuitarArchivo()">✕</button>
+              </div>
+              <div style="margin-top:12px;display:flex;justify-content:flex-end">
+                <button class="btn btn-primary btn-sm" id="btnImplSubir" onclick="implSubirPlan()" disabled style="opacity:.5;cursor:not-allowed">
+                  <svg width="12" height="12" viewBox="0 0 14 14" fill="none" stroke="#fff" stroke-width="2"><path d="M7 10V4M4 7l3-3 3 3" stroke-linecap="round"/></svg>
+                  Subir plan de acción
+                </button>
+              </div>
+            </div>
+
+            <!-- Estado: plan subido — normal (verde) -->
+            <div id="implAuditorSubido" style="display:none;padding:14px 16px;background:#eafaf1;border:1px solid var(--green);border-radius:6px;display:flex;align-items:center;gap:10px">
+              <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><circle cx="9" cy="9" r="8" fill="#27ae60" opacity=".15"/><path d="M5 9l2.5 2.5L13 6" stroke="var(--green)" stroke-width="1.8" stroke-linecap="round"/></svg>
+              <div style="flex:1">
+                <div style="font-size:12px;font-weight:700;color:#1e8449" id="implSubidoNombre">—</div>
+                <div style="font-size:11px;color:var(--muted)" id="implSubidoFecha">—</div>
+              </div>
+            </div>
+
+            <!-- Estado: plan rechazado — auditor puede reemplazar -->
+            <div id="implAuditorRechazado" style="display:none">
+              <div style="display:flex;align-items:center;gap:8px;padding:10px 14px;background:#fdf2f2;border:1px solid #e74c3c;border-radius:6px;margin-bottom:12px">
+                <svg width="14" height="14" viewBox="0 0 12 12" fill="none"><path d="M2 2l8 8M10 2l-8 8" stroke="#c0392b" stroke-width="1.8" stroke-linecap="round"/></svg>
+                <div style="flex:1">
+                  <div style="font-size:12px;font-weight:700;color:#c0392b">Plan rechazado — debes cargar una nueva versión</div>
+                  <div style="font-size:11px;color:var(--muted)" id="implRechazadoNombreAnterior">—</div>
+                </div>
+              </div>
+              <div class="upload-zone" id="implDropZoneReplace"
+                   onclick="document.getElementById('implFileInputReplace').click()"
+                   ondragover="event.preventDefault();this.classList.add('drag')"
+                   ondragleave="this.classList.remove('drag')"
+                   ondrop="implHandleDropReplace(event)">
+                <div class="upload-zone-icon">🔄</div>
+                <div class="upload-zone-label">Cargar nueva versión del Plan de Acción</div>
+                <div class="upload-zone-sub">Solo PDF · máx. 20 MB</div>
+              </div>
+              <input type="file" id="implFileInputReplace" accept=".pdf" style="display:none" onchange="implHandleFileReplace(this.files[0])">
+              <div id="implFilePreviewReplace" style="display:none" class="upload-file-preview">
+                <svg width="16" height="16" viewBox="0 0 14 14" fill="none"><rect x="2" y="1" width="10" height="12" rx="1.5" fill="#e74c3c" opacity=".15" stroke="#e74c3c" stroke-width="1.2"/><path d="M4 5h6M4 7h6M4 9h4" stroke="#e74c3c" stroke-width="1.1" stroke-linecap="round"/></svg>
+                <span class="upload-file-name" id="implFileNameReplace">—</span>
+                <button class="upload-file-remove" onclick="implQuitarArchivoReplace()">✕</button>
+              </div>
+              <div style="margin-top:12px;display:flex;justify-content:flex-end">
+                <button class="btn btn-primary btn-sm" id="btnImplReemplazar" onclick="implReemplazarPlan()" disabled style="opacity:.5;cursor:not-allowed">
+                  <svg width="12" height="12" viewBox="0 0 14 14" fill="none" stroke="#fff" stroke-width="2"><path d="M7 10V4M4 7l3-3 3 3" stroke-linecap="round"/></svg>
+                  Enviar nueva versión
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- ── ZONA REVISIÓN: solo admin ve esto cuando hay archivo subido ── -->
+          <div id="implZonaRevision" style="display:none">
+            <hr style="border:none;border-top:1px solid var(--border);margin:0 0 16px">
+            <div style="font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:12px">Revisión del Plan · Administrador</div>
+            <div style="padding:14px 16px;border:1px solid var(--border);border-radius:6px;background:#fafafa;display:flex;align-items:center;gap:12px;margin-bottom:14px">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><rect x="3" y="2" width="14" height="18" rx="1.5" fill="#fdf2f2" stroke="#e74c3c" stroke-width="1.3"/><path d="M6 7h8M6 10h8M6 13h5" stroke="#e74c3c" stroke-width="1.2" stroke-linecap="round"/></svg>
+              <div style="flex:1">
+                <div style="font-size:13px;font-weight:600;color:var(--text)" id="implRevNombre">—</div>
+                <div style="font-size:11px;color:var(--muted)" id="implRevFecha">—</div>
+              </div>
+              <button class="btn btn-outline btn-sm" onclick="implDescargar()" style="display:flex;align-items:center;gap:5px">
+                <svg width="12" height="12" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M7 3v6M4 7l3 3 3-3" stroke-linecap="round"/><path d="M2 11h10" stroke-linecap="round"/></svg>
+                Descargar
+              </button>
+            </div>
+
+            <!-- Resultado de revisión (si ya fue revisado) -->
+            <div id="implRevResultado" style="display:none;margin-bottom:14px"></div>
+
+            <!-- Botones acción revisión -->
+            <div id="implRevBotones" style="display:flex;gap:10px;justify-content:flex-end">
+              <button class="btn btn-sm" onclick="implRechazar()"
+                style="background:#fdf2f2;color:#c0392b;border:1px solid #e74c3c;display:flex;align-items:center;gap:5px">
+                <svg width="11" height="11" viewBox="0 0 12 12" fill="none"><path d="M2 2l8 8M10 2l-8 8" stroke="#c0392b" stroke-width="1.8" stroke-linecap="round"/></svg>
+                Rechazar
+              </button>
+              <button class="btn btn-sm" onclick="implAprobar()"
+                style="background:#eafaf1;color:#1e8449;border:1px solid var(--green);display:flex;align-items:center;gap:5px">
+                <svg width="11" height="11" viewBox="0 0 12 12" fill="none"><path d="M2 6l2.5 2.5L10 3" stroke="var(--green)" stroke-width="1.8" stroke-linecap="round"/></svg>
+                Aprobar
+              </button>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /content -->
+
+  <footer class="footer">
+    © 2017 – 2026 EXPOFLORES · Plataforma de Certificación Flor Ecuador · Todos los derechos reservados
+  </footer>
+</div><!-- /screen2 -->
+
+<!-- ══ SCREEN 3 · VISUALIZADOR SIN PMCV (solo lectura) ═══════════ -->
+<div class="screen" id="screen3">
+
+  <!-- ROLE BADGE -->
+  <div style="background:#fff8e1;border-bottom:2px solid #f9a825;padding:8px 32px;display:flex;align-items:center;gap:10px;font-size:12px;color:#795548;">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#f9a825" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+    <strong style="color:#e65100;">ROL: VISUALIZADOR</strong>
+    <span style="color:#9e9e9e;">|</span>
+    <span>Vista de solo lectura · Esta empresa no está inscrita en el Programa PMCV. Los módulos de gestión no están disponibles para su rol.</span>
+  </div>
+
+  <!-- NAVBAR (igual que screen1, sin botones de acción) -->
+  <nav class="navbar">
+    <div class="nav-brand">
+      <img src="https://certificacion.florecuador.com/recursos/imagenes/logo_flor_ecuador.png" alt="Flor Ecuador" onerror="this.style.display='none'">
+      <span>Certificación Flor Ecuador</span>
+    </div>
+    <ul class="nav-links">
+      <li><a href="#" class="active">Mi Empresa</a></li>
+      <li><a href="#">Autoevaluación</a></li>
+      <li><a href="#">Auditorías</a></li>
+      <li><a href="#">Reporte BI</a></li>
+      <li><a href="#">PMA</a></li>
+    </ul>
+    <div class="nav-user">
+      <span class="user-badge">VZ</span>
+      <span>Visualizador Empresa</span>
+    </div>
+  </nav>
+
+  <div class="content">
+
+    <!-- PAGE HEADER -->
+    <div class="page-header">
+      <div>
+        <h1 class="page-title">Mi Empresa</h1>
+        <p class="page-subtitle">Vista de solo lectura · Empresa: FLORES DEL VALLE S.A.</p>
+      </div>
+      <!-- Sin botones de acción para visualizador -->
+    </div>
+
+    <!-- ── TRES TARJETAS SUPERIORES ── -->
+    <div class="three-col">
+
+      <!-- CARD 1: Información de Mi Empresa (solo lectura) -->
+      <div class="card">
+        <div class="card-header">
+          <h2 class="card-title">Información de Mi Empresa</h2>
+        </div>
+        <div class="card-body">
+          <div class="info-grid">
+            <span class="info-label">RUC</span>
+            <span class="info-value">1790123456001</span>
+            <span class="info-label">Razón Social</span>
+            <span class="info-value">FLORES DEL VALLE S.A.</span>
+            <span class="info-label">Representante Legal</span>
+            <span class="info-value">Carlos Andrade Mora</span>
+            <span class="info-label">Correo Electrónico</span>
+            <span class="info-value">contacto@floresdelv.com</span>
+            <span class="info-label">Teléfono</span>
+            <span class="info-value">02-2456-789</span>
+            <span class="info-label">Dirección Registrada</span>
+            <span class="info-value">Av. Interoceánica Km 14.5, Tumbaco</span>
+            <span class="info-label">Provincia</span>
+            <span class="info-value">Pichincha</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- CARD 2: Certificación Flor Ecuador (solo lectura) -->
+      <div class="card">
+        <div class="card-header">
+          <h2 class="card-title">Certificación Flor Ecuador</h2>
+        </div>
+        <div class="card-body">
+          <div class="info-grid">
+            <span class="info-label">Estado</span>
+            <span class="info-value"><span class="badge badge-green">Certificada</span></span>
+            <span class="info-label">Categoría</span>
+            <span class="info-value">Oro</span>
+            <span class="info-label">Año Certificación</span>
+            <span class="info-value">2024</span>
+            <span class="info-label">Próxima Auditoría</span>
+            <span class="info-value">15/03/2026</span>
+            <span class="info-label">Auditor Asignado</span>
+            <span class="info-value">BUREAU VERITAS</span>
+          </div>
+          <!-- Sin botón Descargar para visualizador sin permiso -->
+          <div style="margin-top:16px;padding:10px 12px;background:#f5f5f5;border-radius:4px;border:1px solid var(--border);">
+            <p style="margin:0;font-size:12px;color:#9e9e9e;display:flex;align-items:center;gap:6px;">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#bdbdbd" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+              Certificado disponible solo para usuarios con rol Administrador
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- CARD 3: PMCV — BLOQUEADA / NO INSCRITA -->
+      <div class="card" style="position:relative;overflow:hidden;">
+        <div class="card-header" style="background:#fafafa;">
+          <h2 class="card-title" style="color:#9e9e9e;">Información General PMCV</h2>
+          <span style="font-size:11px;background:#eeeeee;color:#757575;padding:3px 8px;border-radius:12px;font-weight:600;letter-spacing:.5px;">NO INSCRITA</span>
+        </div>
+        <!-- Overlay de bloqueo -->
+        <div style="padding:40px 24px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:16px;background:repeating-linear-gradient(135deg,#fafafa 0px,#fafafa 10px,#f3f3f3 10px,#f3f3f3 20px);">
+          <div style="width:56px;height:56px;border-radius:50%;background:#eeeeee;display:flex;align-items:center;justify-content:center;">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#9e9e9e" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+          </div>
+          <div>
+            <p style="margin:0 0 6px;font-weight:600;color:#757575;font-size:14px;">Empresa no inscrita en PMCV</p>
+            <p style="margin:0;font-size:12px;color:#9e9e9e;line-height:1.6;max-width:220px;">El Programa de Mejora Continua y Verificación no ha sido activado para esta empresa.</p>
+          </div>
+          <div style="padding:8px 14px;background:#fff;border:1px solid #e0e0e0;border-radius:4px;font-size:11px;color:#9e9e9e;display:flex;align-items:center;gap:6px;">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#bdbdbd" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            Contacte al administrador para solicitar inscripción
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /three-col -->
+
+    <!-- ── TABLA DE SUCURSALES (solo lectura, sin columna PMCV) ── -->
+    <div class="card" style="margin-top:24px;">
+      <div class="card-header">
+        <h2 class="card-title">Unidades Operativas / Sucursales</h2>
+        <span style="font-size:12px;color:#9e9e9e;background:#f5f5f5;padding:4px 10px;border-radius:12px;">Solo lectura</span>
+      </div>
+      <div class="card-body" style="padding:0;">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Código UO</th>
+              <th>Nombre</th>
+              <th>Dirección</th>
+              <th>Parroquia</th>
+              <th>Provincia</th>
+              <th>Estado</th>
+              <th>Has.</th>
+              <!-- SIN columna PMCV para visualizador sin inscripción -->
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>001</code></td>
+              <td>MATRIZ</td>
+              <td>Km 14.5 Interoceánica</td>
+              <td>Tumbaco</td>
+              <td>Pichincha</td>
+              <td><span class="badge badge-green">Activa</span></td>
+              <td>12.5</td>
+            </tr>
+            <tr>
+              <td><code>002</code></td>
+              <td>FINCA 2</td>
+              <td>Panamericana Norte Km 32</td>
+              <td>Tabacundo</td>
+              <td>Pichincha</td>
+              <td><span class="badge badge-green">Activa</span></td>
+              <td>8.3</td>
+            </tr>
+            <tr>
+              <td><code>005</code></td>
+              <td>FINCA 5</td>
+              <td>Vía Cayambe-Olmedo</td>
+              <td>Olmedo</td>
+              <td>Pichincha</td>
+              <td><span class="badge badge-yellow">Inactiva</span></td>
+              <td>5.0</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div><!-- /sucursales card -->
+
+  </div><!-- /content -->
+
+  <footer class="footer">
+    © 2017 – 2026 EXPOFLORES · Plataforma de Certificación Flor Ecuador · Todos los derechos reservados
+  </footer>
+</div><!-- /screen3 -->
+
+<script>
+/*
+ * ╔══════════════════════════════════════════════════════════╗
+ * ║  ÍNDICE DE FUNCIONES JS                                  ║
+ * ╠══════════════════════════════════════════════════════════╣
+ * ║  § A  NAVEGACIÓN DE PANTALLAS  showScreen                ║
+ * ║  § B  SCREEN 2 TABS/FORMS      switchTab, toggleMentor,  ║
+ * ║                                calcAlcance, togglePass   ║
+ * ║  § C  DATOS PMCV               personas[], fincasCat[],  ║
+ * ║                                asignaciones{}            ║
+ * ║  § D  HELPERS                  getIni, getPorId,         ║
+ * ║                                liderFincasCount, etc.    ║
+ * ║  § E  DRAWER CORE              open/close/setTab         ║
+ * ║  § F  DRAWER: VISTA FINCAS     renderFincas, toggle,     ║
+ * ║                                quitar, open              ║
+ * ║  § G  DRAWER: VISTA ASIGNAR    abrirAsignar, render,     ║
+ * ║                                confirmarAsignacion       ║
+ * ║  § H  DRAWER: VISTA PERSONAS   renderPersonasList, baja  ║
+ * ║  § I  DRAWER: FORM PERSONA     showForm, fpVolver, save  ║
+ * ║  § J  SYNC CARD 3              updateCard3Badges         ║
+ * ╚══════════════════════════════════════════════════════════╝
+ */
+
+  /* ─── § A · NAVEGACIÓN DE PANTALLAS ───────────────────── */
+
+    function showScreen(n, fincaCod, fincaNombre) {
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('visible'));
+    document.getElementById('screen' + n).classList.add('visible');
+    document.getElementById('btnS1').classList.toggle('active', n === 1);
+    document.getElementById('btnS2').classList.toggle('active', n === 2);
+    document.getElementById('btnS3').classList.toggle('active', n === 3);
+    if (n === 2 && fincaCod) {
+      document.getElementById('fincaBadge').innerHTML =
+        '<strong style="color:var(--purple)">' + fincaCod + '</strong> · ' + fincaNombre;
+    }
+  }
+
+
+  /* ─── § B · SCREEN 2: TABS Y CONTROLES ────────────────── */
+
+    function switchTab(id, btn) {
+    document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+    btn.classList.add('active');
+  }
+
+  function toggleMentorForm(show) {
+    const f = document.getElementById('mentorForm');
+    const b = document.getElementById('btnAddMentor');
+    f.style.display = show ? 'block' : 'none';
+    if (show) { f.scrollIntoView({ behavior: 'smooth', block: 'start' }); b.style.display = 'none'; }
+    else { b.style.display = ''; }
+  }
+
+  function calcAlcance() {
+    const total = parseFloat(document.getElementById('totalTrab').value) || 0;
+    const obj   = parseFloat(document.getElementById('objTrab').value)   || 0;
+    const empresa = parseFloat(document.getElementById('totalEmpresa').innerText) || 450;
+    const pctF = total > 0 ? ((obj / total) * 100).toFixed(2) + '%' : '—';
+    const pctE = empresa > 0 ? ((obj / empresa) * 100).toFixed(2) + '%' : '—';
+    document.getElementById('pctFinca').innerText   = pctF;
+    document.getElementById('pctEmpresa').innerText = pctE;
+  }
+
+  function togglePass() {
+    const p = document.getElementById('passInput');
+    p.type = p.type === 'password' ? 'text' : 'password';
+  }
+
+  /* ─── § B2 · FAMILIAS BENEFICIADAS (planif. mensual) ────── */
+
+  const MESES = ['Enero','Febrero','Marzo','Abril','Mayo','Junio',
+                 'Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+
+  // Plan mensual ingresado por el usuario (lo que la finca declaró por mes)
+  const famPlan = new Array(12).fill(0);
+  // Real reportado por mes
+  const famReal = new Array(12).fill(0);
+
+  // Mes actual del sistema
+  const HOY_MES = new Date().getMonth();
+
+  /* Devuelve {mesIni, mesFin} según los date inputs de Configuración */
+  function famRango() {
+    const inputs = document.querySelectorAll('#tab-planif input[type="date"]');
+    const ini = inputs[0]?.value || '2026-02-01';
+    const fin = inputs[1]?.value || '2026-11-30';
+    return {
+      mesIni: new Date(ini + 'T00:00').getMonth(),
+      mesFin: new Date(fin + 'T00:00').getMonth()
+    };
+  }
+
+  /* Estado de un mes — sin "En proceso": si no llega al plan = Con retraso */
+  /* Estado por mes — único denominador: totalPlan (suma de todos los meses del rango)
+     Completo   = acumReal >= totalPlan
+     Al día     = real >= plan del mes
+     Con retraso= real < plan del mes (sin rangos porcentuales intermedios)
+     Pendiente  = mes futuro                                                   */
+  function famEstadoMes(plan, real, esPasadoOActual, acumReal, totalPlan) {
+    if (!esPasadoOActual)              return { cls:'fam-pendiente', txt:'Pendiente'   };
+    if (totalPlan > 0 && acumReal >= totalPlan)
+                                       return { cls:'fam-completo',  txt:'Completo'    };
+    if (plan === 0)                    return { cls:'fam-pendiente', txt:'Sin meta'    };
+    if (real >= plan)                  return { cls:'fam-aldia',     txt:'Al día'      };
+    return                                    { cls:'fam-retraso',   txt:'Con retraso' };
+  }
+
+  /* Estado global — mismo totalPlan y totalPlanActivo */
+  function famEstadoGlobal(totalReal, totalPlan, totalPlanActivo) {
+    if (totalPlan > 0 && totalReal >= totalPlan)
+                                       return { cls:'fam-completo',  txt:'Completo'    };
+    if (totalPlanActivo === 0)         return { cls:'fam-pendiente', txt:'Sin planif.' };
+    if (totalReal >= totalPlanActivo)  return { cls:'fam-aldia',     txt:'Al día'      };
+    return                                    { cls:'fam-retraso',   txt:'Con retraso' };
+  }
+
+  /* ── IMPLEMENTACIÓN Y SEGUIMIENTO ── */
+  const implState = { rol:'admin', fechaLimite:null, archivo:null, nombreArchivo:null, fechaSubida:null, revision:null };
+
+  function implSetRol(rol) {
+    implState.rol = rol;
+    implRender();
+  }
+
+  function implActualizarFecha() {}
+
+  function implGuardarFecha() {
+    const val = document.getElementById('implFechaLimite').value;
+    if (!val) return;
+    implState.fechaLimite = val;
+    implRender();
+  }
+
+  function implHandleFile(file) {
+    if (!file) return;
+    implState.archivo    = file;
+    implState.nombreArchivo = file.name;
+    document.getElementById('implFileName').textContent      = file.name;
+    document.getElementById('implFilePreview').style.display = 'flex';
+    document.getElementById('implDropZone').style.display    = 'none';
+    const btn = document.getElementById('btnImplSubir');
+    btn.disabled = false; btn.style.opacity='1'; btn.style.cursor='pointer';
+  }
+
+  function implHandleDrop(e) {
+    e.preventDefault();
+    document.getElementById('implDropZone').classList.remove('drag');
+    const f = e.dataTransfer.files[0];
+    if (f) implHandleFile(f);
+  }
+
+  function implQuitarArchivo() {
+    implState.archivo = null;
+    document.getElementById('implFilePreview').style.display = 'none';
+    document.getElementById('implDropZone').style.display    = '';
+    document.getElementById('implFileInput').value           = '';
+    const btn = document.getElementById('btnImplSubir');
+    btn.disabled=true; btn.style.opacity='.5'; btn.style.cursor='not-allowed';
+  }
+
+  function implSubirPlan() {
+    if (!implState.archivo) return;
+    implState.fechaSubida = new Date().toLocaleDateString('es-EC',{day:'2-digit',month:'long',year:'numeric'});
+    implState.revision = null;
+    implRender();
+  }
+
+  function implDescargar() {
+    alert(`Descargar: ${implState.nombreArchivo}\n(En producción se generaría la descarga real del archivo.)`);
+  }
+
+  function implAprobar() {
+    implState.revision = 'aprobado';
+    implRender();
+  }
+
+  function implRechazar() {
+    implState.revision = 'rechazado';
+    implRender();
+  }
+
+  function implHandleFileReplace(file) {
+    if (!file) return;
+    document.getElementById('implFileNameReplace').textContent         = file.name;
+    document.getElementById('implFilePreviewReplace').style.display    = 'flex';
+    document.getElementById('implDropZoneReplace').style.display       = 'none';
+    const btn = document.getElementById('btnImplReemplazar');
+    btn.disabled=false; btn.style.opacity='1'; btn.style.cursor='pointer';
+    btn._pendingFile = file;
+  }
+
+  function implHandleDropReplace(e) {
+    e.preventDefault();
+    document.getElementById('implDropZoneReplace').classList.remove('drag');
+    const f = e.dataTransfer.files[0];
+    if (f) implHandleFileReplace(f);
+  }
+
+  function implQuitarArchivoReplace() {
+    document.getElementById('implFilePreviewReplace').style.display = 'none';
+    document.getElementById('implDropZoneReplace').style.display    = '';
+    document.getElementById('implFileInputReplace').value           = '';
+    const btn = document.getElementById('btnImplReemplazar');
+    btn.disabled=true; btn.style.opacity='.5'; btn.style.cursor='not-allowed';
+    btn._pendingFile = null;
+  }
+
+  function implReemplazarPlan() {
+    const btn  = document.getElementById('btnImplReemplazar');
+    const file = btn._pendingFile;
+    if (!file) return;
+    implState.archivo       = file;
+    implState.nombreArchivo = file.name;
+    implState.fechaSubida   = new Date().toLocaleDateString('es-EC',{day:'2-digit',month:'long',year:'numeric'});
+    implState.revision      = null;
+    implRender();
+  }
+
+  function _implFechaFmt(iso) {
+    if (!iso) return '—';
+    const [y,m,d] = iso.split('-');
+    const meses = ['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'];
+    return `${parseInt(d)} ${meses[parseInt(m)-1]} ${y}`;
+  }
+
+  function implRender() {
+    const { rol, fechaLimite, nombreArchivo, fechaSubida, revision } = implState;
+    const hayArchivo   = !!nombreArchivo;
+    const hayFecha     = !!fechaLimite;
+
+    // badge estado
+    const badge = document.getElementById('implEstadoBadge');
+    if (!hayFecha)       { badge.textContent='Sin configurar'; badge.className='badge badge-gray'; }
+    else if (!hayArchivo){ badge.textContent='Pendiente de carga'; badge.className='badge badge-warn'; }
+    else if (revision==='aprobado')  { badge.textContent='Aprobado'; badge.className='badge badge-ok'; }
+    else if (revision==='rechazado') { badge.textContent='Rechazado'; badge.className='badge badge-err'; }
+    else                 { badge.textContent='En revisión'; badge.className='badge badge-info'; }
+
+    // zona admin
+    const zonaAdmin = document.getElementById('implZonaAdmin');
+    zonaAdmin.style.display = rol==='admin' ? '' : 'none';
+    if (rol==='admin') {
+      const msg = document.getElementById('implFechaGuardadaMsg');
+      if (hayFecha) {
+        msg.style.display='flex';
+        document.getElementById('implFechaGuardadaTxt').textContent = `Fecha límite guardada: ${_implFechaFmt(fechaLimite)}`;
+        document.getElementById('implFechaLimite').value = fechaLimite;
+      } else {
+        msg.style.display='none';
+      }
+    }
+
+    // zona auditor
+    const zonaAuditor = document.getElementById('implZonaAuditor');
+    zonaAuditor.style.display = '';
+    const esRechazado = hayArchivo && revision === 'rechazado';
+    document.getElementById('implAuditorSinFecha').style.display    = !hayFecha                             ? '' : 'none';
+    document.getElementById('implAuditorConFecha').style.display    = (hayFecha && !hayArchivo)             ? '' : 'none';
+    document.getElementById('implAuditorSubido').style.display      = (hayArchivo && !esRechazado)          ? '' : 'none';
+    document.getElementById('implAuditorRechazado').style.display   = esRechazado                           ? '' : 'none';
+
+    if (hayFecha && !hayArchivo) {
+      document.getElementById('implFechaLimiteMostrada').textContent = _implFechaFmt(fechaLimite);
+    }
+    if (hayArchivo && !esRechazado) {
+      document.getElementById('implSubidoNombre').textContent = nombreArchivo;
+      document.getElementById('implSubidoFecha').textContent  = `Subido el ${fechaSubida}`;
+    }
+    if (esRechazado) {
+      document.getElementById('implRechazadoNombreAnterior').textContent = `Archivo anterior: ${nombreArchivo}`;
+      // reset zona de reemplazo
+      document.getElementById('implFilePreviewReplace').style.display = 'none';
+      document.getElementById('implDropZoneReplace').style.display    = '';
+      document.getElementById('implFileInputReplace').value           = '';
+      const btnR = document.getElementById('btnImplReemplazar');
+      btnR.disabled=true; btnR.style.opacity='.5'; btnR.style.cursor='not-allowed';
+    }
+
+    // zona revisión (solo admin, solo si hay archivo)
+    const zonaRev = document.getElementById('implZonaRevision');
+    zonaRev.style.display = (rol==='admin' && hayArchivo) ? '' : 'none';
+    if (rol==='admin' && hayArchivo) {
+      document.getElementById('implRevNombre').textContent = nombreArchivo;
+      document.getElementById('implRevFecha').textContent  = `Subido el ${fechaSubida}`;
+      const res = document.getElementById('implRevResultado');
+      const btns= document.getElementById('implRevBotones');
+      if (revision) {
+        btns.style.display='none';
+        res.style.display='';
+        if (revision==='aprobado') {
+          res.innerHTML=`<div style="display:flex;align-items:center;gap:8px;padding:10px 14px;background:#eafaf1;border:1px solid var(--green);border-radius:6px;font-size:12px;color:#1e8449;font-weight:600"><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 7l3 3L12 4" stroke="var(--green)" stroke-width="1.8" stroke-linecap="round"/></svg>Plan aprobado · ${new Date().toLocaleDateString('es-EC')}<button onclick="implState.revision=null;implRender()" style="margin-left:auto;background:none;border:none;cursor:pointer;font-size:11px;color:var(--muted)">Deshacer</button></div>`;
+        } else {
+          res.innerHTML=`<div style="display:flex;align-items:center;gap:8px;padding:10px 14px;background:#fdf2f2;border:1px solid #e74c3c;border-radius:6px;font-size:12px;color:#c0392b;font-weight:600"><svg width="14" height="14" viewBox="0 0 12 12" fill="none"><path d="M2 2l8 8M10 2l-8 8" stroke="#c0392b" stroke-width="1.8" stroke-linecap="round"/></svg>Plan rechazado · ${new Date().toLocaleDateString('es-EC')}<button onclick="implState.revision=null;implRender()" style="margin-left:auto;background:none;border:none;cursor:pointer;font-size:11px;color:var(--muted)">Deshacer</button></div>`;
+        }
+      } else {
+        btns.style.display='flex';
+        res.style.display='none';
+      }
+    }
+  }
+
+  function renderFamilias() {
+    const tbody = document.getElementById('famTbody');
+    if (!tbody) return;
+
+    const { mesIni, mesFin } = famRango();
+
+    // Paso 1 — totalDeclarado = lo que ingresó el usuario en el header
+    const totalDeclarado = parseInt(document.getElementById('famObjetivo')?.value) || 0;
+
+    // totalPlan = suma mensual ingresada (debe coincidir con totalDeclarado)
+    let totalPlan = 0;
+    for (let i = mesIni; i <= mesFin; i++) totalPlan += famPlan[i] || 0;
+
+    // Indicador de diferencia: ¿la suma de meses cuadra con lo declarado?
+    const diffEl = document.getElementById('famDiffBadge');
+    if (diffEl && totalDeclarado > 0) {
+      const diff = totalPlan - totalDeclarado;
+      diffEl.style.display = '';
+      if (diff === 0) {
+        diffEl.style.cssText += 'background:#eafaf1;color:#1e8449';
+        diffEl.textContent = '✓ cuadra';
+      } else {
+        diffEl.style.cssText += 'background:#fef9e7;color:#b7770d';
+        diffEl.textContent = (diff > 0 ? '+' : '') + diff + ' vs suma';
+      }
+    }
+
+    // Paso 2 — recorrer meses para construir filas y acumular totales activos
+    let totalPlanActivo = 0, totalReal = 0, acumReal = 0, rows = '';
+
+    for (let i = mesIni; i <= mesFin; i++) {
+      const esPasado = i < HOY_MES;
+      const esActual = i === HOY_MES;
+      const plan     = famPlan[i] || 0;
+      const real     = famReal[i] || 0;
+
+      if (esPasado || esActual) {
+        totalPlanActivo += plan;
+        totalReal       += real;
+        acumReal        += real;
+      }
+
+      const est    = famEstadoMes(plan, real, esPasado || esActual, acumReal, totalDeclarado);
+      const rowCls = esActual ? 'mes-actual' : (esPasado ? 'mes-pasado' : '');
+      const mesTxt = esActual
+        ? `<strong>${MESES[i]}</strong>&nbsp;<span style="font-size:10px;color:var(--purple);font-weight:700">← actual</span>`
+        : MESES[i];
+
+      rows += `<tr class="${rowCls}">
+        <td>${mesTxt}</td>
+        <td><input class="fam-input" type="number" min="0" value="${plan||''}" placeholder="0"
+              oninput="famPlan[${i}]=+this.value;renderFamilias()"></td>
+        <td><input class="fam-input" type="number" min="0"
+              value="${esPasado||esActual ? (real||'') : ''}"
+              placeholder="${esPasado||esActual?'0':'—'}"
+              ${!esPasado&&!esActual?'readonly':''}
+              oninput="famReal[${i}]=+this.value;renderFamilias()"></td>
+        <td><span class="fam-badge ${est.cls}">${est.txt}</span></td>
+      </tr>`;
+    }
+    tbody.innerHTML = rows;
+
+    // Paso 3 — un solo % = totalReal / totalPlanActivo (meses vencidos+actual)
+    const pct   = totalPlanActivo > 0 ? Math.round(totalReal / totalPlanActivo * 100) : 0;
+    const pctTxt = totalPlanActivo > 0 ? pct + '%' : '—';
+    const glEst = famEstadoGlobal(totalReal, totalDeclarado || totalPlan, totalPlanActivo);
+
+    // Footer y scorecards usan EXACTAMENTE los mismos valores
+    document.getElementById('footPlan').textContent    = totalPlan;
+    document.getElementById('footReal').textContent    = totalReal;
+    document.getElementById('footPct').textContent     = pctTxt;
+    document.getElementById('famTotalPlan').textContent = totalPlan;
+    document.getElementById('famTotalReal').textContent = totalReal;
+    document.getElementById('famPct').textContent       = pctTxt;
+    document.getElementById('famEstadoGlobal').innerHTML =
+      `<span class="fam-badge ${glEst.cls}" style="font-size:13px;padding:4px 10px">${glEst.txt}</span>`;
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    // Datos demo: finca declaró 300 familias distribuidas en Feb–Nov
+    famPlan[1]=25; famPlan[2]=28; famPlan[3]=30; famPlan[4]=30;
+    famPlan[5]=32; famPlan[6]=30; famPlan[7]=28; famPlan[8]=28;
+    famPlan[9]=30; famPlan[10]=39;
+    // Reales reportados hasta el mes anterior al actual
+    famReal[1]=24; famReal[2]=21; famReal[3]=30; famReal[4]=29;
+    renderFamilias();
+    // Recalcular si cambia el rango de fechas
+    document.querySelectorAll('#tab-planif input[type="date"]')
+      .forEach(inp => inp.addEventListener('change', renderFamilias));
+  });
+
+  /* ── PROGRAMA PMCV · PERSONAS ──────────────────────────── */
+  /* Modelo:
+     - personas[]          → registro único de cada persona
+     - asignaciones[cod]   → { lider: personaId|null, mentores: [personaId] }
+     Regla: max 1 líder por finca; una persona puede ser líder en ≤2 fincas
+  ─────────────────────────────────────────────────────────── */
+
+  const fincasCat = [
+    { cod:'001', nombre:'MATRIZ'  },
+    { cod:'002', nombre:'FINCA 2' },
+    { cod:'005', nombre:'FINCA 5' },
+  ];
+  let nextPersonaId = 2;
+  let editingPersonaId = null;
+  let asignarCtx = { fincaCod: null, rol: null }; // contexto de la vista asignar
+  let drawerReturnTab = 'finca'; // a qué tab volver desde el form
+
+
+  /* ─── § C · DATOS DEL PROGRAMA PMCV ───────────────────── */
+
+    /* Personas registradas en el programa */
+  const personas = [
+    { id:'P01', nombre:'María',  apellido:'Vásquez', cargo:'Supervisora Técnica', correo:'mvasquez@trigal.ec', tel:'099 876 5432', usuario:'mvasquez' },
+    { id:'P02', nombre:'Carlos', apellido:'Mejía',   cargo:'Agrónomo',           correo:'cmejia@trigal.ec',   tel:'098 123 4567', usuario:'cmejia'   },
+  ];
+
+  /* Asignaciones por finca: lider=personaId|null, mentores=[personaId] */
+  const asignaciones = {
+    '001': { lider: 'P01', mentores: ['P02'] },
+    '002': { lider: null,  mentores: ['P01'] },
+    '005': { lider: null,  mentores: [] },
+  };
+
+  /* PMCV activo por finca (check en tabla sucursales) */
+  const pmcvFincas = { '001': true, '002': true, '005': false };
+
+  /* ── helpers ── */
+
+  /* ─── § D · HELPERS Y UTILIDADES ──────────────────────── */
+
+    function getIni(p) { return ((p.nombre||'?')[0]+(p.apellido||'?')[0]).toUpperCase(); }
+  function getPorId(id) { return personas.find(p=>p.id===id); }
+  function liderFincasCount(pid) {
+    return Object.values(asignaciones).filter(a=>a.lider===pid).length;
+  }
+  function isMentorEnFinca(pid, cod) {
+    return (asignaciones[cod]?.mentores||[]).includes(pid);
+  }
+
+  /* ── Abrir / cerrar ── */
+
+  /* ─── § E · DRAWER: ABRIR / CERRAR / TABS ─────────────── */
+
+    function openMentorDrawer() {
+    document.getElementById('mentorDrawerOverlay').classList.add('open');
+    document.getElementById('mentorDrawer').classList.add('open');
+    drawerSetTab('finca');
+  }
+  function closeMentorDrawer() {
+    document.getElementById('mentorDrawerOverlay').classList.remove('open');
+    document.getElementById('mentorDrawer').classList.remove('open');
+  }
+
+  /* ── Tabs ── */
+  function drawerSetTab(tab) {
+    drawerReturnTab = tab;
+    document.getElementById('drawerViewFincas').style.display   = tab==='finca'    ? 'flex' : 'none';
+    document.getElementById('drawerViewPersonas').style.display = tab==='personas' ? 'flex' : 'none';
+    document.getElementById('drawerViewFormPersona').style.display  = 'none';
+    document.getElementById('drawerViewAsignar').style.display      = 'none';
+    document.getElementById('drawerViewDesignacion').style.display  = 'none';
+    document.getElementById('dtabFinca').classList.toggle('active', tab==='finca');
+    document.getElementById('dtabPersonas').classList.toggle('active', tab==='personas');
+    if (tab==='finca')    renderFincas();
+    if (tab==='personas') renderPersonasList();
+  }
+
+  /* ── VISTA: POR FINCA ── */
+
+  /* ─── § F · DRAWER: VISTA POR FINCA (accordion) ────────── */
+
+    function renderFincas() {
+    const el = document.getElementById('fincaAccordion');
+    el.innerHTML = fincasCat.map(f => {
+      const a = asignaciones[f.cod] || { lider:null, mentores:[] };
+      const lider = a.lider ? getPorId(a.lider) : null;
+      const mentores = (a.mentores||[]).map(getPorId).filter(Boolean);
+      return `
+      <div class="finca-block" id="fb_${f.cod}">
+        <div class="finca-block-header" onclick="toggleFinca('${f.cod}')">
+          <div style="display:flex;align-items:center;gap:8px">
+            <span style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--purple);font-weight:700">${f.cod}</span>
+            <span style="font-weight:600;font-size:13px">${f.nombre}</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:6px">
+            <span style="font-size:11px;color:var(--muted)">${lider?'1 líder':'sin líder'} · ${mentores.length} mentor${mentores.length!==1?'es':''}</span>
+            <svg class="finca-chevron" id="chv_${f.cod}" width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" style="transition:transform .2s"><path d="M4 6l4 4 4-4"/></svg>
+          </div>
+        </div>
+        <div class="finca-block-body" id="fbd_${f.cod}">
+
+          <!-- Líder slot -->
+          <div class="role-slot">
+            <div class="role-slot-label">
+              <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="var(--purple)" stroke-width="2"><polygon points="8,2 10,6 15,6 11,9 13,14 8,11 3,14 5,9 1,6 6,6"/></svg>
+              Líder de Finca
+            </div>
+            ${lider ? `
+              <div class="person-row">
+                <div class="person-avatar">${getIni(lider)}</div>
+                <div class="person-info">
+                  <div class="person-name">${lider.nombre} ${lider.apellido}</div>
+                  <div class="person-sub">${lider.cargo||'—'}</div>
+                </div>
+                <div style="display:flex;gap:4px;margin-left:auto">
+                  <button class="btn btn-outline btn-xs" onclick="abrirAsignar('${f.cod}','lider',event)">Cambiar</button>
+                  <button class="btn btn-outline btn-xs" style="color:#c0392b;border-color:#f5c6c6" onclick="quitarLider('${f.cod}')">Quitar</button>
+                </div>
+              </div>` : `
+              <button class="btn-asignar-vacio" onclick="abrirAsignar('${f.cod}','lider',event)">
+                <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><circle cx="8" cy="8" r="6"/><line x1="8" y1="5" x2="8" y2="11"/><line x1="5" y1="8" x2="11" y2="8"/></svg>
+                Designar Líder
+              </button>`}
+          </div>
+
+          <!-- Mentores slot -->
+          <div class="role-slot" style="border-bottom:none">
+            <div class="role-slot-label">
+              <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="#555" stroke-width="2"><circle cx="8" cy="5" r="3"/><path d="M2 14c0-3.3 2.7-6 6-6s6 2.7 6 6"/></svg>
+              Mentores
+            </div>
+            ${mentores.map(m=>`
+              <div class="person-row">
+                <div class="person-avatar" style="background:#6c757d">${getIni(m)}</div>
+                <div class="person-info">
+                  <div class="person-name">${m.nombre} ${m.apellido}</div>
+                  <div class="person-sub">${m.cargo||'—'}</div>
+                </div>
+                <button class="btn btn-outline btn-xs" style="margin-left:auto;color:#c0392b;border-color:#f5c6c6"
+                  onclick="quitarMentor('${f.cod}','${m.id}')">Quitar</button>
+              </div>`).join('')}
+            <button class="btn-asignar-vacio" style="margin-top:${mentores.length?'8px':'0'}" onclick="abrirAsignar('${f.cod}','mentor',event)">
+              <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><circle cx="8" cy="8" r="6"/><line x1="8" y1="5" x2="8" y2="11"/><line x1="5" y1="8" x2="11" y2="8"/></svg>
+              Agregar Mentor
+            </button>
+          </div>
+
+        </div>
+      </div>`;
+    }).join('');
+    // abrir la primera por defecto
+    openFinca('001');
+    updateCard3Badges();
+  }
+
+  function toggleFinca(cod) {
+    const body = document.getElementById('fbd_'+cod);
+    const chv  = document.getElementById('chv_'+cod);
+    const open = body.style.display !== 'none';
+    body.style.display = open ? 'none' : 'block';
+    chv.style.transform = open ? 'rotate(0deg)' : 'rotate(180deg)';
+  }
+  function openFinca(cod) {
+    const body = document.getElementById('fbd_'+cod);
+    const chv  = document.getElementById('chv_'+cod);
+    if (body) { body.style.display='block'; chv.style.transform='rotate(180deg)'; }
+  }
+
+  function quitarLider(cod) {
+    asignaciones[cod].lider = null;
+    renderFincas(); updateCard3Badges();
+  }
+  function quitarMentor(cod, pid) {
+    asignaciones[cod].mentores = (asignaciones[cod].mentores||[]).filter(x=>x!==pid);
+    renderFincas(); updateCard3Badges();
+  }
+
+  /* ── VISTA: ASIGNAR ROL ── */
+
+  /* ─── § G · DRAWER: VISTA ASIGNAR ROL ──────────────────── */
+
+    function abrirAsignar(fincaCod, rol, e) {
+    e && e.stopPropagation();
+    asignarCtx = { fincaCod, rol };
+    const f = fincasCat.find(x=>x.cod===fincaCod);
+    document.getElementById('asignarTitle').textContent =
+      (rol==='lider' ? 'Designar Líder' : 'Agregar Mentor') + ' · ' + fincaCod + ' ' + (f?.nombre||'');
+    document.getElementById('drawerViewFincas').style.display   = 'none';
+    document.getElementById('drawerViewPersonas').style.display = 'none';
+    document.getElementById('drawerViewAsignar').style.display  = 'flex';
+    renderAsignarOpciones();
+  }
+
+  function renderAsignarOpciones() {
+    const { fincaCod, rol } = asignarCtx;
+    const a = asignaciones[fincaCod] || { lider:null, mentores:[] };
+    const cont = document.getElementById('asignarPersonasList');
+
+    // Filtrar personas disponibles
+    const disponibles = personas.filter(p => {
+      if (rol === 'lider') {
+        // No ya líder de esta finca, no ya mentor aquí, max 2 fincas como líder
+        return a.lider !== p.id && liderFincasCount(p.id) < 2;
+      } else {
+        // No ya mentor en esta finca
+        return !isMentorEnFinca(p.id, fincaCod);
+      }
+    });
+
+    if (!disponibles.length) {
+      cont.innerHTML = `<p style="font-size:13px;color:var(--muted);text-align:center;padding:20px 0">
+        No hay personas disponibles para asignar.<br>
+        <button class="btn btn-outline btn-xs" style="margin-top:8px" onclick="drawerShowFormPersona(null,'asignar')">+ Registrar nueva persona</button>
+      </p>`;
+      return;
+    }
+
+    cont.innerHTML = disponibles.map(p => {
+      const fincasLider = Object.entries(asignaciones).filter(([,v])=>v.lider===p.id).map(([k])=>k);
+      const fincasMentor = Object.entries(asignaciones).filter(([,v])=>(v.mentores||[]).includes(p.id)).map(([k])=>k);
+      const tags = [...fincasLider.map(c=>`<span class="finca-chip" style="background:#f3eaf7">${c}·L</span>`),
+                    ...fincasMentor.map(c=>`<span class="finca-chip">${c}·M</span>`)].join('');
+      return `
+      <div class="person-row" style="padding:10px 12px;border:1px solid var(--border);border-radius:6px;margin-bottom:8px">
+        <div class="person-avatar">${getIni(p)}</div>
+        <div class="person-info" style="flex:1">
+          <div class="person-name">${p.nombre} ${p.apellido}</div>
+          <div class="person-sub">${p.cargo||'—'}</div>
+          <div style="margin-top:4px">${tags}</div>
+        </div>
+        <button class="btn btn-primary btn-xs" onclick="confirmarAsignacion('${p.id}')">
+          ${rol==='lider' ? 'Designar' : 'Asignar'}
+        </button>
+      </div>`;
+    }).join('');
+  }
+
+  let designPendientePid = null;
+  let designArchivoFile  = null;
+
+  function confirmarAsignacion(pid) {
+    const { fincaCod, rol } = asignarCtx;
+    if (!asignaciones[fincaCod]) asignaciones[fincaCod] = { lider:null, mentores:[] };
+    if (rol === 'lider') {
+      mostrarPasoDesignacion(pid);
+    } else {
+      if (!asignaciones[fincaCod].mentores.includes(pid))
+        asignaciones[fincaCod].mentores.push(pid);
+      drawerSetTab('finca');
+      updateCard3Badges();
+    }
+  }
+
+  function mostrarPasoDesignacion(pid) {
+    designPendientePid = pid;
+    designArchivoFile  = null;
+    const p     = personas.find(x => x.id === pid);
+    const finca = fincasCat.find(f => f.cod === asignarCtx.fincaCod);
+    document.getElementById('designDocAvatar').textContent  = getIni(p);
+    document.getElementById('designDocNombre').textContent  = `${p.nombre} ${p.apellido}`;
+    document.getElementById('designDocCargo').textContent   = p.cargo || '—';
+    document.getElementById('designDocFinca').textContent   = finca ? `Finca: ${finca.nombre}` : '';
+    document.getElementById('designFilePreview').style.display = 'none';
+    document.getElementById('designDropZone').style.display    = '';
+    document.getElementById('designFileInput').value           = '';
+    _designBtnState(false);
+    document.querySelectorAll('[id^="drawerView"]').forEach(v => v.style.display = 'none');
+    document.getElementById('drawerViewDesignacion').style.display = 'flex';
+  }
+
+  function volverDeDesignacion() {
+    designPendientePid = null;
+    designArchivoFile  = null;
+    document.getElementById('drawerViewDesignacion').style.display = 'none';
+    document.getElementById('drawerViewFincas').style.display      = 'none';
+    document.getElementById('drawerViewPersonas').style.display    = 'none';
+    document.getElementById('drawerViewFormPersona').style.display = 'none';
+    document.getElementById('drawerViewAsignar').style.display     = 'flex';
+    renderAsignarOpciones();
+  }
+
+  function designHandleFile(file) {
+    if (!file) return;
+    designArchivoFile = file;
+    document.getElementById('designFileName').textContent      = file.name;
+    document.getElementById('designFilePreview').style.display = 'flex';
+    document.getElementById('designDropZone').style.display    = 'none';
+    _designBtnState(true);
+  }
+
+  function designHandleDrop(e) {
+    e.preventDefault();
+    document.getElementById('designDropZone').classList.remove('drag');
+    const file = e.dataTransfer.files[0];
+    if (file) designHandleFile(file);
+  }
+
+  function designQuitarArchivo() {
+    designArchivoFile = null;
+    document.getElementById('designFilePreview').style.display = 'none';
+    document.getElementById('designDropZone').style.display    = '';
+    document.getElementById('designFileInput').value           = '';
+    _designBtnState(false);
+  }
+
+  function _designBtnState(on) {
+    const btn = document.getElementById('btnDesignConfirmar');
+    btn.disabled      = !on;
+    btn.style.opacity = on ? '1' : '.5';
+    btn.style.cursor  = on ? 'pointer' : 'not-allowed';
+  }
+
+  function _finalizarDesignacion() {
+    const { fincaCod } = asignarCtx;
+    if (!asignaciones[fincaCod]) asignaciones[fincaCod] = { lider:null, mentores:[] };
+    asignaciones[fincaCod].lider = designPendientePid;
+    designPendientePid = null;
+    designArchivoFile  = null;
+    drawerSetTab('finca');
+    updateCard3Badges();
+  }
+
+  function designOmitirYConfirmar() { _finalizarDesignacion(); }
+  function designConfirmarConDoc()   { _finalizarDesignacion(); }
+
+  /* ── VISTA: LISTA DE PERSONAS ── */
+
+  /* ─── § H · DRAWER: VISTA PERSONAS (roster) ────────────── */
+
+    function renderPersonasList() {
+    const cont = document.getElementById('personasList');
+    if (!personas.length) {
+      cont.innerHTML = `<div class="drawer-empty"><p>Sin personas registradas</p></div>`;
+      return;
+    }
+    cont.innerHTML = personas.map(p => {
+      const fincasLider  = Object.entries(asignaciones).filter(([,v])=>v.lider===p.id).map(([k])=>k);
+      const fincasMentor = Object.entries(asignaciones).filter(([,v])=>(v.mentores||[]).includes(p.id)).map(([k])=>k);
+      const esSel = seleccionadas.has(p.id);
+      return `
+      <div class="mentor-card seleccionable${esSel?' seleccionada':''}" id="pcard_${p.id}">
+        <div class="mentor-card-header">
+          <div class="persona-check-wrap">
+            <input type="checkbox" class="pchk" id="pchk_${p.id}" ${esSel?'checked':''} onchange="toggleSeleccion('${p.id}')">
+          </div>
+          <div class="mentor-avatar" style="cursor:pointer" onclick="toggleSeleccion('${p.id}')">${getIni(p)}</div>
+          <div style="flex:1;min-width:0;cursor:pointer" onclick="toggleSeleccion('${p.id}')">
+            <div class="mentor-name">${p.nombre} ${p.apellido}</div>
+            <div class="mentor-role">${p.cargo||'—'} · <span style="font-family:'IBM Plex Mono',monospace;font-size:10px">${p.usuario||'—'}</span></div>
+          </div>
+          <div style="display:flex;gap:4px;flex-shrink:0">
+            <button class="btn btn-outline btn-xs" onclick="drawerShowFormPersona('${p.id}','personas')">Editar</button>
+            <button class="btn btn-outline btn-xs" style="color:#c0392b;border-color:#f5c6c6" onclick="bajaPersona('${p.id}')">Baja</button>
+          </div>
+        </div>
+        <div class="mentor-card-body">
+          <div style="font-size:11px;color:var(--muted);margin-bottom:6px">${p.correo||'—'} · ${p.tel||'—'}</div>
+          ${fincasLider.map(c=>`<span class="finca-chip" style="background:#f3eaf7;color:var(--purple)">${c} · Líder</span>`).join('')}
+          ${fincasMentor.map(c=>`<span class="finca-chip">${c} · Mentor</span>`).join('')}
+          ${!fincasLider.length && !fincasMentor.length ? '<span style="font-size:11px;color:#bbb">Sin asignaciones</span>' : ''}
+        </div>
+      </div>`;
+    }).join('');
+  }
+
+  function bajaPersona(pid) {
+    if (!confirm('¿Confirma dar de baja esta persona? Se eliminarán sus asignaciones.')) return;
+    const idx = personas.findIndex(p=>p.id===pid);
+    if (idx>-1) personas.splice(idx,1);
+    // limpiar asignaciones
+    Object.values(asignaciones).forEach(a => {
+      if (a.lider===pid) a.lider=null;
+      a.mentores = (a.mentores||[]).filter(x=>x!==pid);
+    });
+    updateCard3Badges();
+    renderPersonasList();
+  }
+
+  /* ── VISTA: FORM PERSONA ── */
+
+  /* ─── § I · DRAWER: FORM CREAR / EDITAR PERSONA ────────── */
+
+    function drawerShowFormPersona(personaId, returnTo) {
+    drawerReturnTab = returnTo || 'finca';
+    editingPersonaId = personaId;
+    ['drawerViewFincas','drawerViewPersonas','drawerViewAsignar'].forEach(v =>
+      document.getElementById(v).style.display = 'none');
+    document.getElementById('drawerViewFormPersona').style.display = 'flex';
+
+    // reset
+    ['fpNombre','fpApellido','fpCargo','fpCorreo','fpTelefono','fpUsuario','fpPass'].forEach(id =>
+      document.getElementById(id).value = '');
+
+    if (personaId) {
+      const p = getPorId(personaId);
+      if (!p) return;
+      document.getElementById('drawerFormPersonaTitle').textContent = 'Editar · '+p.nombre+' '+p.apellido;
+      document.getElementById('fpNombre').value    = p.nombre;
+      document.getElementById('fpApellido').value  = p.apellido;
+      document.getElementById('fpCargo').value     = p.cargo;
+      document.getElementById('fpCorreo').value    = p.correo;
+      document.getElementById('fpTelefono').value  = p.tel;
+      document.getElementById('fpUsuario').value   = p.usuario;
+    } else {
+      document.getElementById('drawerFormPersonaTitle').textContent = 'Nueva Persona';
+    }
+  }
+
+  function fpVolver() {
+    if (drawerReturnTab === 'asignar') {
+      ['drawerViewFincas','drawerViewPersonas','drawerViewFormPersona'].forEach(v=>
+        document.getElementById(v).style.display='none');
+      document.getElementById('drawerViewAsignar').style.display='flex';
+      renderAsignarOpciones();
+    } else {
+      drawerSetTab(drawerReturnTab==='personas' ? 'personas' : 'finca');
+    }
+  }
+
+  function guardarPersona() {
+    const nombre   = document.getElementById('fpNombre').value.trim();
+    const apellido = document.getElementById('fpApellido').value.trim();
+    if (!nombre || !apellido) { alert('Nombre y apellido son requeridos.'); return; }
+
+    const data = {
+      nombre, apellido,
+      cargo:   document.getElementById('fpCargo').value.trim(),
+      correo:  document.getElementById('fpCorreo').value.trim(),
+      tel:     document.getElementById('fpTelefono').value.trim(),
+      usuario: document.getElementById('fpUsuario').value.trim(),
+    };
+
+    if (editingPersonaId) {
+      const p = getPorId(editingPersonaId);
+      if (p) Object.assign(p, data);
+    } else {
+      nextPersonaId++;
+      data.id = 'P' + String(nextPersonaId).padStart(2,'0');
+      personas.push(data);
+    }
+    fpVolver();
+    updateCard3Badges();
+  }
+
+  /* ── Actualizar Card 3 en Screen 1 ── */
+
+  /* ─── § K · ENVÍO DE CREDENCIALES POR CORREO ───────────── */
+
+  let seleccionadas = new Set(); // Set de personaIds seleccionadas
+
+  function toggleSeleccion(pid) {
+    if (seleccionadas.has(pid)) seleccionadas.delete(pid);
+    else seleccionadas.add(pid);
+    actualizarBarraAccion();
+    // Actualizar visual de la card
+    const card = document.getElementById('pcard_' + pid);
+    if (card) card.classList.toggle('seleccionada', seleccionadas.has(pid));
+    const chk = document.getElementById('pchk_' + pid);
+    if (chk) chk.checked = seleccionadas.has(pid);
+  }
+
+  function limpiarSeleccion() {
+    seleccionadas.clear();
+    actualizarBarraAccion();
+    document.querySelectorAll('.mentor-card.seleccionada').forEach(c => c.classList.remove('seleccionada'));
+    document.querySelectorAll('.pchk').forEach(c => c.checked = false);
+  }
+
+  function actualizarBarraAccion() {
+    const bar = document.getElementById('drawerActionBar');
+    const cnt = document.getElementById('selCount');
+    if (bar) bar.classList.toggle('visible', seleccionadas.size > 0);
+    if (cnt) cnt.textContent = seleccionadas.size;
+  }
+
+  function getLiderDeFinca(fincaCod) {
+    const lidId = asignaciones[fincaCod]?.lider;
+    return lidId ? getPorId(lidId) : null;
+  }
+
+  function getLideresDePersona(pid) {
+    // Busca en qué fincas está esta persona (como mentor) y quién es el líder de esas fincas
+    const lideres = new Map();
+    for (const [cod, a] of Object.entries(asignaciones)) {
+      if ((a.mentores||[]).includes(pid) || a.lider === pid) {
+        const l = getLiderDeFinca(cod);
+        if (l && l.id !== pid) lideres.set(l.id, { persona: l, finca: cod });
+      }
+    }
+    return [...lideres.values()];
+  }
+
+  function abrirModalEnvio() {
+    if (!seleccionadas.size) return;
+    const body = document.getElementById('modalEnvioBody');
+    const footer = document.getElementById('modalEnvioFooter');
+    const subtitulo = document.getElementById('modalEnvioSubtitulo');
+
+    subtitulo.textContent = 'Revisa el envío antes de confirmar';
+    footer.innerHTML = `
+      <button class="btn btn-outline" onclick="cerrarModalEnvio()">Cancelar</button>
+      <button class="btn btn-primary" onclick="confirmarEnvio()">
+        <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="#fff" stroke-width="2"><path d="M2 8l12-6-6 12-2-4-4-2z"/></svg>
+        Confirmar Envío
+      </button>`;
+
+    // Agrupar por líder para el reporte de auditoría
+    const reporteLideres = new Map(); // liderId → { lider, personas[] }
+
+    const rowsHTML = [...seleccionadas].map(pid => {
+      const p = getPorId(pid);
+      if (!p) return '';
+      const tieneEmail = !!p.correo;
+      const lideres = getLideresDePersona(pid);
+
+      // Acumular en reporte de líderes
+      lideres.forEach(({ persona: l, finca }) => {
+        if (!reporteLideres.has(l.id))
+          reporteLideres.set(l.id, { lider: l, personas: [] });
+        reporteLideres.get(l.id).personas.push({ p, finca });
+      });
+
+      const tipo = tieneEmail ? 'ok' : 'error';
+      const icon = tieneEmail ? '✅' : '❌';
+      const msg  = tieneEmail
+        ? `<strong>${p.correo}</strong> — usuario: <code>${p.usuario||'sin usuario'}</code>`
+        : `<span style="color:#e74c3c">Sin correo registrado — no se puede enviar</span>`;
+
+      return `
+      <div class="envio-row ${tipo}">
+        <div class="envio-status">${icon}</div>
+        <div style="flex:1">
+          <div style="font-weight:600;font-size:13px">${p.nombre} ${p.apellido}</div>
+          <div style="font-size:12px;color:var(--muted);margin-top:2px">${msg}</div>
+        </div>
+      </div>`;
+    }).join('');
+
+    // Bloque de reporte para líderes
+    let lideresHTML = '';
+    if (reporteLideres.size > 0) {
+      lideresHTML = `
+      <div class="lider-audit-block" style="margin-top:16px">
+        <div style="font-size:11px;font-weight:700;letter-spacing:.6px;text-transform:uppercase;color:var(--purple);margin-bottom:10px">
+          📋 Reporte de auditoría — se enviará a los líderes
+        </div>
+        ${[...reporteLideres.values()].map(({lider, personas}) => `
+          <div style="margin-bottom:10px;padding-bottom:10px;border-bottom:1px solid rgba(93,43,110,.15)">
+            <div style="font-size:12px;font-weight:600;display:flex;align-items:center;gap:6px">
+              <div class="person-avatar" style="width:22px;height:22px;font-size:9px">${getIni(lider)}</div>
+              ${lider.nombre} ${lider.apellido}
+              <span style="font-size:11px;color:var(--muted);font-weight:400">${lider.correo||'sin email'}</span>
+            </div>
+            <ul style="margin:6px 0 0 28px;padding:0;font-size:12px;color:var(--muted)">
+              ${personas.map(({p,finca}) =>
+                `<li>${p.nombre} ${p.apellido} — Finca ${finca}</li>`
+              ).join('')}
+            </ul>
+          </div>`).join('')}
+      </div>`;
+    } else {
+      lideresHTML = `
+      <div class="envio-row warn" style="margin-top:12px">
+        <div class="envio-status">⚠️</div>
+        <div style="font-size:12px">Las personas seleccionadas no tienen líder asignado. No se enviará reporte de auditoría.</div>
+      </div>`;
+    }
+
+    body.innerHTML = `
+      <p style="font-size:12px;color:var(--muted);margin:0 0 12px">
+        <strong>${seleccionadas.size}</strong> persona(s) recibirán sus credenciales de acceso al sistema PMCV:
+      </p>
+      ${rowsHTML}
+      ${lideresHTML}`;
+
+    document.getElementById('modalEnvioOverlay').classList.add('open');
+  }
+
+  function cerrarModalEnvio() {
+    document.getElementById('modalEnvioOverlay').classList.remove('open');
+  }
+
+  function confirmarEnvio() {
+    const body   = document.getElementById('modalEnvioBody');
+    const footer = document.getElementById('modalEnvioFooter');
+    const subtitulo = document.getElementById('modalEnvioSubtitulo');
+
+    // Simular envío — en producción GeneXus haría el POST real
+    const enviadas = [...seleccionadas].filter(pid => {
+      const p = getPorId(pid); return p && p.correo;
+    });
+    const fallidas = [...seleccionadas].filter(pid => {
+      const p = getPorId(pid); return !p || !p.correo;
+    });
+
+    subtitulo.textContent = 'Resultado del envío';
+    body.innerHTML = `
+      <div style="text-align:center;padding:16px 0 8px">
+        <div style="font-size:36px;margin-bottom:8px">${fallidas.length ? '⚠️' : '✅'}</div>
+        <div style="font-weight:700;font-size:15px;color:var(--text)">
+          ${enviadas.length} correo(s) enviado(s)${fallidas.length ? `, ${fallidas.length} con error` : ' exitosamente'}
+        </div>
+      </div>
+      <div style="margin-top:12px">
+        ${[...seleccionadas].map(pid => {
+          const p = getPorId(pid);
+          const ok = p && p.correo;
+          return `
+          <div class="result-row">
+            <div class="result-icon">${ok ? '✅' : '❌'}</div>
+            <div style="flex:1">
+              <strong>${p ? p.nombre + ' ' + p.apellido : pid}</strong>
+              <div style="font-size:11px;color:var(--muted)">${ok ? 'Enviado a ' + p.correo : 'Sin correo — no enviado'}</div>
+            </div>
+          </div>`;
+        }).join('')}
+      </div>
+      ${enviadas.length ? `
+      <div style="margin-top:14px;padding:10px 12px;background:#f3eaf7;border-radius:5px;font-size:12px;color:var(--purple)">
+        📋 Reporte de auditoría enviado a los líderes correspondientes.
+      </div>` : ''}`;
+
+    footer.innerHTML = `
+      <button class="btn btn-primary" onclick="cerrarModalEnvio();limpiarSeleccion()">Cerrar</button>`;
+
+    // Marcar personas como "enviadas" en la UI
+    enviadas.forEach(pid => {
+      const card = document.getElementById('pcard_' + pid);
+      if (card) {
+        const badge = document.createElement('span');
+        badge.style.cssText = 'background:#27ae60;color:#fff;padding:1px 6px;border-radius:2px;font-size:10px;font-weight:700;margin-left:6px';
+        badge.textContent = 'ENVIADO';
+        badge.id = 'sent_' + pid;
+        if (!document.getElementById('sent_' + pid))
+          card.querySelector('.mentor-name')?.appendChild(badge);
+      }
+    });
+  }
+
+  /* ─── § J · SYNC: ACTUALIZAR CARD 3 (Screen 1) ─────────── */
+
+    function updateCard3Badges() {
+    // Contar personas únicas asignadas en toda la empresa
+    const unique = new Set();
+    Object.values(asignaciones).forEach(a => {
+      if (a.lider) unique.add(a.lider);
+      (a.mentores||[]).forEach(x=>unique.add(x));
+    });
+    const badge = document.querySelector('#screen1 .mentor-count-badge');
+    if (badge) badge.textContent = personas.length;
+
+    // Líder de la primera finca (MATRIZ) para mostrar en card3
+    const liderMatrizId = asignaciones['001']?.lider;
+    const lm = liderMatrizId ? getPorId(liderMatrizId) : null;
+    const av = document.getElementById('card3LiderAvatar');
+    const nm = document.getElementById('card3LiderNombre');
+    if (av) av.textContent = lm ? getIni(lm) : '—';
+    if (nm) nm.textContent = lm ? lm.nombre+' '+lm.apellido : 'Sin asignar';
+  }
+
+  /* mantiene compatibilidad con togglePass del form anterior */
+  function togglePassFP() {
+    const p = document.getElementById('fpPass');
+    if(p) p.type = p.type==='password'?'text':'password';
+  }
+
+  /* ── alias legacy ── */
+  function updateMentorCount() { updateCard3Badges(); }
+
+  /* ─── § L · EDITAR INFORMACIÓN GENERAL PMCV ────────────── */
+
+  // Datos del programa PMCV (en producción vendrían del backend GeneXus)
+  const infoPMCV = {
+    activa:           true,          // switch ON/OFF
+    estado:           'ACTIVO',      // ACTIVO | INACTIVO | DESADHERIDO | SIN_ACTIVAR
+    fechaAdherencia:  '2022-01-20',
+    ultimaActualizacion: '20/01/2022'
+  };
+
+  // Mapeo de estado → HTML badge Carmine (Card 3)
+  const estadoBadge = {
+    ACTIVO:      `<span style="display:inline-flex;align-items:center;gap:5px;background:var(--green-light);color:var(--green);padding:2px 9px;border-radius:2px;font-size:11.5px;font-weight:700"><span class="status-dot dot-green"></span>ACTIVO</span>`,
+    INACTIVO:    `<span style="display:inline-flex;align-items:center;gap:5px;background:#fef6ec;color:#e67e22;padding:2px 9px;border-radius:2px;font-size:11.5px;font-weight:700"><span class="status-dot" style="background:#e67e22"></span>INACTIVO</span>`,
+    DESADHERIDO: `<span style="display:inline-flex;align-items:center;gap:5px;background:#fdf2f2;color:#e74c3c;padding:2px 9px;border-radius:2px;font-size:11.5px;font-weight:700"><span class="status-dot" style="background:#e74c3c"></span>DESADHERIDO</span>`,
+    SIN_ACTIVAR: `<span style="display:inline-flex;align-items:center;gap:5px;background:#f5f5f5;color:#9e9e9e;padding:2px 9px;border-radius:2px;font-size:11.5px;font-weight:700"><span class="status-dot" style="background:#bdbdbd"></span>SIN ACTIVAR</span>`
+  };
+
+  // Seleccionar estado en el picker visual
+  function selEstado(val) {
+    document.getElementById('epEstado').value = val;
+    document.querySelectorAll('#epEstadoPicker .estado-opt').forEach(el => {
+      el.classList.toggle('sel', el.dataset.val === val);
+    });
+  }
+
+  function togglePMCVSwitch(on) {
+    infoPMCV.activa = on;
+    infoPMCV.estado = on ? 'ACTIVO' : 'SIN_ACTIVAR';
+
+    // Label del switch
+    const lbl = document.getElementById('switchPMCVLabel');
+    if (lbl) { lbl.textContent = on ? 'Inscrita' : 'No inscrita'; lbl.classList.toggle('on', on); }
+
+    // Mostrar u ocultar cuerpo de la card
+    const body = document.getElementById('card3Body');
+    if (body) body.style.display = on ? '' : 'none';
+
+    // Mostrar / ocultar botón Editar
+    const btnEd = document.getElementById('btnEditarPMCV');
+    if (btnEd) btnEd.style.display = on ? '' : 'none';
+
+    // Actualizar badge estado en card 3
+    const el = document.getElementById('card3Estado');
+    if (el) el.innerHTML = estadoBadge[infoPMCV.estado] || '';
+
+    // Mostrar u ocultar columna PMCV en tabla sucursales
+    const tabla = document.querySelector('#screen1 .table-wrap table');
+    if (tabla) tabla.classList.toggle('pmcv-col-hidden', !on);
+  }
+
+  function toggleFincaPMCV(cod, on) {
+    pmcvFincas[cod] = on;
+
+    const lbl = document.getElementById('lblPMCV_' + cod);
+    const btn = document.getElementById('btnPMCV_' + cod);
+
+    if (lbl) { lbl.textContent = on ? 'Activa' : 'Inactiva'; lbl.classList.toggle('on', on); }
+    if (btn) { btn.style.display = on ? '' : 'none'; }
+
+    // Si se desactiva, limpiar asignaciones de esa finca
+    if (!on && asignaciones[cod]) {
+      asignaciones[cod] = { lider: null, mentores: [] };
+      updateCard3Badges();
+    }
+  }
+
+  function abrirModalEditPMCV() {
+    if (!infoPMCV.activa) return; // no editar si no está inscrita
+    selEstado(infoPMCV.estado);
+    document.getElementById('epFechaAdh').value = infoPMCV.fechaAdherencia;
+    document.getElementById('epUltimaActualizacion').textContent =
+      'Última actualización: ' + infoPMCV.ultimaActualizacion;
+    document.getElementById('modalEditPMCVOverlay').classList.add('open');
+  }
+
+  function cerrarModalEditPMCV() {
+    document.getElementById('modalEditPMCVOverlay').classList.remove('open');
+  }
+
+  function guardarInfoPMCV() {
+    const estado   = document.getElementById('epEstado').value;
+    const fechaAdh = document.getElementById('epFechaAdh').value;
+    const fInput   = document.getElementById('epFechaAdh');
+
+    if (!fechaAdh) {
+      fInput.style.borderColor = '#e74c3c';
+      fInput.focus();
+      return;
+    }
+    fInput.style.borderColor = '';
+
+    // Persistir (en producción: POST GeneXus)
+    infoPMCV.estado             = estado;
+    infoPMCV.fechaAdherencia    = fechaAdh;
+    infoPMCV.ultimaActualizacion = new Date().toLocaleDateString('es-EC');
+
+    // Refrescar Card 3
+    const [yy, mm, dd] = fechaAdh.split('-');
+    const elEstado = document.getElementById('card3Estado');
+    if (elEstado) elEstado.innerHTML = estadoBadge[estado] || estadoBadge.ACTIVO;
+    const elFecha = document.getElementById('card3FechaAdh');
+    if (elFecha) elFecha.innerHTML = `
+      <svg width="12" height="12" viewBox="0 0 14 14" fill="none"><rect x="2" y="3" width="10" height="9" rx="1" stroke="currentColor" stroke-width="1.3"/><path d="M2 6h10M5 2v2M9 2v2" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+      ${dd}/${mm}/${yy}`;
+
+    cerrarModalEditPMCV();
+  }
+
+
+</script>
+
+<!-- ── PMCV PERSONAS DRAWER ── -->
+<div class="drawer-overlay" id="mentorDrawerOverlay" onclick="closeMentorDrawer()"></div>
+<div class="drawer" id="mentorDrawer" style="width:500px">
+
+  <!-- HEADER -->
+  <div class="drawer-header">
+    <div>
+      <h3>Programa PMCV · Personas</h3>
+      <div style="font-size:11px;opacity:.75;margin-top:2px">Líderes y mentores por finca</div>
+    </div>
+    <button class="drawer-close" onclick="closeMentorDrawer()">
+      <svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2.2"><line x1="4" y1="4" x2="16" y2="16"/><line x1="16" y1="4" x2="4" y2="16"/></svg>
+    </button>
+  </div>
+
+  <!-- TABS -->
+  <div style="display:flex;border-bottom:1px solid var(--border);background:#fff">
+    <button class="drawer-tab active" id="dtabFinca" onclick="drawerSetTab('finca')">Por Finca</button>
+    <button class="drawer-tab" id="dtabPersonas" onclick="drawerSetTab('personas')">Personas</button>
+  </div>
+
+  <!-- ════ VISTA: POR FINCA ════ -->
+  <div id="drawerViewFincas" style="display:flex;flex-direction:column;flex:1;overflow:hidden">
+    <div class="drawer-body" style="overflow-y:auto">
+      <div id="fincaAccordion"></div>
+      <button class="btn-asignar-vacio" style="margin-top:4px;border-style:solid;color:var(--purple);border-color:var(--purple)"
+        onclick="drawerShowFormPersona(null,'finca')">
+        <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><circle cx="8" cy="8" r="6"/><line x1="8" y1="5" x2="8" y2="11"/><line x1="5" y1="8" x2="11" y2="8"/></svg>
+        Registrar Nueva Persona
+      </button>
+    </div>
+  </div>
+
+  <!-- ════ VISTA: PERSONAS ════ -->
+  <div id="drawerViewPersonas" style="display:none;flex-direction:column;flex:1;overflow:hidden">
+    <div class="drawer-body" style="overflow-y:auto;padding-bottom:0">
+      <!-- Toolbar -->
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+        <div style="font-size:12px;color:var(--muted)">
+          Selecciona personas para enviar credenciales
+        </div>
+        <button class="btn btn-primary btn-xs" onclick="drawerShowFormPersona(null,'personas')">+ Nueva Persona</button>
+      </div>
+      <!-- Lista con checkboxes -->
+      <div id="personasList"></div>
+    </div>
+    <!-- Barra flotante de acción -->
+    <div class="drawer-action-bar" id="drawerActionBar">
+      <div class="sel-count">
+        <span id="selCount">0</span> persona(s) seleccionada(s)
+      </div>
+      <div style="display:flex;gap:6px">
+        <button class="btn-clear" onclick="limpiarSeleccion()">Cancelar</button>
+        <button class="btn-send" onclick="abrirModalEnvio()">
+          <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 8l12-6-6 12-2-4-4-2z"/></svg>
+          Enviar Credenciales
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════ VISTA: FORM PERSONA ════ -->
+  <div id="drawerViewFormPersona" style="display:none;flex-direction:column;flex:1;overflow:hidden">
+    <div style="padding:12px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px;background:#fafafa">
+      <button onclick="fpVolver()" style="background:none;border:none;cursor:pointer;color:var(--purple);padding:0;display:flex;align-items:center;gap:4px;font-size:13px">
+        <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 3L5 8l5 5"/></svg>
+        Volver
+      </button>
+      <span style="color:var(--border)">|</span>
+      <span id="drawerFormPersonaTitle" style="font-size:13px;font-weight:600;color:var(--text)">Nueva Persona</span>
+    </div>
+    <div class="drawer-body" style="overflow-y:auto">
+      <p class="drawer-section-title">1 · Datos Personales</p>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px">
+        <div class="form-field">
+          <label class="form-label">Nombre <span style="color:#e74c3c">*</span></label>
+          <input type="text" class="form-input" id="fpNombre" placeholder="Ej: María">
+        </div>
+        <div class="form-field">
+          <label class="form-label">Apellido <span style="color:#e74c3c">*</span></label>
+          <input type="text" class="form-input" id="fpApellido" placeholder="Ej: Vásquez">
+        </div>
+      </div>
+      <p class="drawer-section-title">2 · Contacto y Cargo</p>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px">
+        <div class="form-field" style="grid-column:1/-1">
+          <label class="form-label">Correo Electrónico</label>
+          <input type="email" class="form-input" id="fpCorreo" placeholder="persona@empresa.ec">
+        </div>
+        <div class="form-field">
+          <label class="form-label">Teléfono</label>
+          <input type="tel" class="form-input" id="fpTelefono" placeholder="09X XXX XXXX">
+        </div>
+        <div class="form-field">
+          <label class="form-label">Cargo</label>
+          <input type="text" class="form-input" id="fpCargo" placeholder="Ej: Supervisor Técnico">
+        </div>
+      </div>
+      <p class="drawer-section-title">3 · Credenciales de Acceso</p>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:20px">
+        <div class="form-field">
+          <label class="form-label">Usuario</label>
+          <input type="text" class="form-input" id="fpUsuario" placeholder="usuario_plataforma">
+        </div>
+        <div class="form-field">
+          <label class="form-label">Contraseña</label>
+          <div class="form-input-icon">
+            <input type="password" class="form-input" id="fpPass" placeholder="••••••••">
+            <span class="input-icon" style="cursor:pointer" onclick="togglePassFP()">
+              <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><ellipse cx="7" cy="7" rx="5" ry="3" stroke="currentColor" stroke-width="1.3"/><circle cx="7" cy="7" r="1.5" stroke="currentColor" stroke-width="1.3"/></svg>
+            </span>
+          </div>
+        </div>
+      </div>
+      <div class="alert alert-blue" style="margin-bottom:16px">
+        <span class="alert-icon">ℹ</span>
+        <span class="alert-text" style="font-size:12px">La asignación a fincas como <strong>Líder</strong> o <strong>Mentor</strong> se realiza desde la vista <em>Por Finca</em> después de registrar a la persona.</span>
+      </div>
+      <div style="display:flex;gap:8px;padding-top:8px;border-top:1px solid var(--border)">
+        <button class="btn btn-primary" onclick="guardarPersona()" style="flex:1">
+          <svg width="12" height="12" viewBox="0 0 14 14" fill="none"><path d="M2 7l3.5 3.5L12 3" stroke="#fff" stroke-width="1.8" stroke-linecap="round"/></svg>
+          Guardar Persona
+        </button>
+        <button class="btn btn-outline" onclick="fpVolver()">Cancelar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════ VISTA: ASIGNAR ROL EN FINCA ════ -->
+  <div id="drawerViewAsignar" style="display:none;flex-direction:column;flex:1;overflow:hidden">
+    <div style="padding:12px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px;background:#fafafa">
+      <button onclick="drawerSetTab('finca')" style="background:none;border:none;cursor:pointer;color:var(--purple);padding:0;display:flex;align-items:center;gap:4px;font-size:13px">
+        <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 3L5 8l5 5"/></svg>
+        Volver
+      </button>
+      <span style="color:var(--border)">|</span>
+      <span id="asignarTitle" style="font-size:13px;font-weight:600;color:var(--text)">Designar</span>
+    </div>
+    <div class="drawer-body" style="overflow-y:auto">
+      <p class="drawer-section-title" style="margin-bottom:10px">Personas disponibles</p>
+      <div id="asignarPersonasList"></div>
+      <div style="margin-top:14px;padding-top:14px;border-top:1px solid var(--border)">
+        <button class="btn-asignar-vacio" onclick="drawerShowFormPersona(null,'asignar')">
+          <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><circle cx="8" cy="8" r="6"/><line x1="8" y1="5" x2="8" y2="11"/><line x1="5" y1="8" x2="11" y2="8"/></svg>
+          Registrar nueva persona y asignar
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── VISTA: PASO DOCUMENTO DE DESIGNACIÓN ── -->
+  <div id="drawerViewDesignacion" style="display:none;flex-direction:column;height:100%">
+    <div class="drawer-subheader" style="padding:10px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px">
+      <button onclick="volverDeDesignacion()" style="background:none;border:none;cursor:pointer;color:var(--purple);font-size:13px;font-weight:600;display:flex;align-items:center;gap:4px">
+        <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 4L6 8l4 4"/></svg>
+        Volver
+      </button>
+      <span style="color:var(--border)">|</span>
+      <span style="font-size:13px;font-weight:600;color:var(--text)">Documento de Designación</span>
+    </div>
+
+    <div class="drawer-body" style="overflow-y:auto;padding:20px 16px">
+
+      <!-- Persona seleccionada -->
+      <div id="designDocPersona" style="display:flex;align-items:center;gap:10px;padding:12px;background:#f5f0f8;border-radius:6px;margin-bottom:20px">
+        <div class="person-avatar" id="designDocAvatar" style="width:36px;height:36px;font-size:13px"></div>
+        <div>
+          <div style="font-size:13px;font-weight:700;color:var(--text)" id="designDocNombre">—</div>
+          <div style="font-size:11px;color:var(--muted)" id="designDocCargo">—</div>
+          <div style="font-size:10.5px;color:var(--purple);font-weight:600;margin-top:2px" id="designDocFinca">—</div>
+        </div>
+      </div>
+
+      <!-- Instrucción -->
+      <p style="font-size:12px;color:var(--muted);margin:0 0 14px;line-height:1.6">
+        Adjunta el documento oficial que respalda la designación de esta persona como <strong>Líder PMCV</strong> de la finca. El archivo debe estar en formato <strong>PDF</strong>.
+      </p>
+
+      <!-- Zona de upload -->
+      <div class="upload-zone" id="designDropZone"
+           onclick="document.getElementById('designFileInput').click()"
+           ondragover="event.preventDefault();this.classList.add('drag')"
+           ondragleave="this.classList.remove('drag')"
+           ondrop="designHandleDrop(event)">
+        <div class="upload-zone-icon">📄</div>
+        <div class="upload-zone-label">Haz clic o arrastra el archivo aquí</div>
+        <div class="upload-zone-sub">Solo PDF · máx. 10 MB</div>
+      </div>
+      <input type="file" id="designFileInput" accept=".pdf" style="display:none" onchange="designHandleFile(this.files[0])">
+
+      <!-- Preview del archivo seleccionado -->
+      <div id="designFilePreview" style="display:none" class="upload-file-preview">
+        <svg width="16" height="16" viewBox="0 0 14 14" fill="none"><rect x="2" y="1" width="10" height="12" rx="1.5" fill="#e74c3c" opacity=".15" stroke="#e74c3c" stroke-width="1.2"/><path d="M4 5h6M4 7h6M4 9h4" stroke="#e74c3c" stroke-width="1.1" stroke-linecap="round"/></svg>
+        <span class="upload-file-name" id="designFileName">—</span>
+        <button class="upload-file-remove" onclick="designQuitarArchivo()" title="Quitar archivo">✕</button>
+      </div>
+
+    </div>
+
+    <!-- Footer acciones -->
+    <div style="padding:14px 16px;border-top:1px solid var(--border);display:flex;gap:8px;justify-content:flex-end;background:#fff">
+      <button class="btn btn-outline btn-sm" onclick="designOmitirYConfirmar()">
+        Omitir y designar sin documento
+      </button>
+      <button class="btn btn-primary btn-sm" id="btnDesignConfirmar" onclick="designConfirmarConDoc()" disabled
+        style="opacity:.5;cursor:not-allowed">
+        <svg width="12" height="12" viewBox="0 0 14 14" fill="none" stroke="#fff" stroke-width="2"><path d="M2 7l3.5 3.5L12 3" stroke-linecap="round"/></svg>
+        Confirmar con documento
+      </button>
+    </div>
+  </div>
+
+</div><!-- /drawer -->
+
+<!-- ══ MODAL: ENVÍO DE CREDENCIALES ════════════════════════════════ -->
+<div class="modal-overlay" id="modalEnvioOverlay">
+  <div class="modal" id="modalEnvio">
+
+    <!-- Header -->
+    <div class="modal-header">
+      <div>
+        <h3 id="modalEnvioTitulo">Enviar Credenciales PMCV</h3>
+        <div id="modalEnvioSubtitulo" style="font-size:11px;opacity:.75;margin-top:2px">Vista previa del envío</div>
+      </div>
+      <button onclick="cerrarModalEnvio()" style="background:none;border:none;color:#fff;cursor:pointer;font-size:18px;line-height:1;opacity:.8">✕</button>
+    </div>
+
+    <!-- Body — se llena por JS -->
+    <div class="modal-body" id="modalEnvioBody"></div>
+
+    <!-- Footer -->
+    <div class="modal-footer" id="modalEnvioFooter">
+      <button class="btn btn-outline" onclick="cerrarModalEnvio()">Cancelar</button>
+      <button class="btn btn-primary" id="btnConfirmarEnvio" onclick="confirmarEnvio()">
+        <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="#fff" stroke-width="2"><path d="M2 8l12-6-6 12-2-4-4-2z"/></svg>
+        Confirmar Envío
+      </button>
+    </div>
+
+  </div>
+</div><!-- /modal -->
+
+<!-- ══ MODAL: EDITAR INFORMACIÓN GENERAL PMCV ══════════════════════ -->
+<div class="modal-overlay" id="modalEditPMCVOverlay">
+  <div class="modal" style="max-width:480px">
+
+    <div class="modal-header">
+      <div>
+        <h3 style="margin:0;font-size:15px;font-weight:700;color:var(--text)">Editar Información General PMCV</h3>
+        <div style="font-size:12px;color:var(--muted);margin-top:2px">Empresa: Flores El Trigal S.A.</div>
+      </div>
+      <button onclick="cerrarModalEditPMCV()" style="background:none;border:none;cursor:pointer;color:var(--muted);font-size:18px;line-height:1;padding:2px 6px">✕</button>
+    </div>
+
+    <div class="modal-body" style="padding:20px 24px">
+
+      <!-- Fila 1: Estado (picker visual) -->
+      <div class="form-group" style="margin-bottom:16px">
+        <label class="form-label">Estado de Adherencia <span style="color:#e74c3c">*</span></label>
+        <div class="estado-picker" id="epEstadoPicker">
+
+          <div class="estado-opt s-activo" data-val="ACTIVO" onclick="selEstado('ACTIVO')">
+            <div class="estado-opt-icon">✅</div>
+            <div>
+              <div class="estado-opt-label">Activo</div>
+              <div class="estado-opt-desc">Programa corriendo con normalidad</div>
+            </div>
+          </div>
+
+          <div class="estado-opt s-inactivo" data-val="INACTIVO" onclick="selEstado('INACTIVO')">
+            <div class="estado-opt-icon">⏸️</div>
+            <div>
+              <div class="estado-opt-label">Inactivo</div>
+              <div class="estado-opt-desc">Suspendido temporalmente, reacti­vable</div>
+            </div>
+          </div>
+
+          <div class="estado-opt s-desadherido" data-val="DESADHERIDO" onclick="selEstado('DESADHERIDO')">
+            <div class="estado-opt-icon">🚫</div>
+            <div>
+              <div class="estado-opt-label">Desadherido</div>
+              <div class="estado-opt-desc">Retirado formalmente del programa</div>
+            </div>
+          </div>
+
+
+        </div>
+        <!-- campo oculto para guardar valor seleccionado -->
+        <input type="hidden" id="epEstado" value="ACTIVO">
+      </div>
+
+      <!-- Fecha de Adherencia -->
+      <div class="form-group" style="margin-bottom:0">
+        <label class="form-label">Fecha de Adherencia <span style="color:#e74c3c">*</span></label>
+        <input type="date" class="form-control" id="epFechaAdh">
+        <div style="font-size:11px;color:var(--muted);margin-top:4px">Fecha en que la empresa se adhirió formalmente al programa PMCV</div>
+      </div>
+
+    </div><!-- /modal-body -->
+
+    <div class="modal-footer" style="justify-content:space-between;align-items:center">
+      <div style="font-size:11px;color:var(--muted)">
+        <span id="epUltimaActualizacion">Última actualización: 20/01/2022</span>
+      </div>
+      <div style="display:flex;gap:8px">
+        <button class="btn btn-outline" onclick="cerrarModalEditPMCV()">Cancelar</button>
+        <button class="btn btn-primary" onclick="guardarInfoPMCV()">
+          <svg width="11" height="11" viewBox="0 0 14 14" fill="none" stroke="#fff" stroke-width="2"><path d="M2 7l3.5 3.5L12 3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          Guardar cambios
+        </button>
+      </div>
+    </div>
+
+  </div>
+</div><!-- /modal edit pmcv -->
+
+</body>
+</html>
