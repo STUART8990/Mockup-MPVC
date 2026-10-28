@@ -252,6 +252,9 @@
   .doc-item:last-child { border-bottom: none; }
   .doc-name { font-size: 12.5px; font-weight: 600; color: var(--text); display: flex; align-items: center; gap: 7px; }
   .doc-actions { display: flex; align-items: center; gap: 7px; }
+  .doc-upload-list { padding: 0 0 6px 21px; }
+  .doc-uploaded-file { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 6px 0; font-size: 11.5px; color: var(--muted); }
+  .doc-uploaded-file strong { color: var(--text); font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .icon-check  { color: var(--green); font-size: 14px; }
   .icon-warn   { color: var(--orange); font-size: 14px; }
 
@@ -1192,22 +1195,41 @@
           </div>
           <!-- Documentos -->
           <div style="border-top:1px solid var(--border);padding:0 14px">
+            <div style="padding:10px 0 2px;font-size:10.5px;color:var(--muted)">Documentos de adhesión · una vez registrados quedan bloqueados para preservar la evidencia.</div>
             <div class="doc-item">
-              <div class="doc-name"><span class="icon-check">✔</span>Acuerdo de Confidencialidad</div>
-              <button class="btn btn-outline btn-xs">
+              <div class="doc-name" id="docConfNombre"><span class="icon-check">✔</span>Acuerdo de Confidencialidad · registrado</div>
+              <button class="btn btn-outline btn-xs" title="Consultar documento registrado">
                 <svg width="10" height="10" viewBox="0 0 14 14" fill="none"><path d="M2 10v2h10v-2M7 2v7M4.5 7l2.5 2.5L9.5 7" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
               </button>
             </div>
             <div class="doc-item">
-              <div class="doc-name"><span class="icon-warn">⚠</span>Carta de Compromiso</div>
-              <button class="btn btn-primary btn-xs">Cargar</button>
+              <div class="doc-name" id="docCompNombre"><span class="icon-warn">⚠</span>Cartas de Compromiso · pendiente</div>
+              <button class="btn btn-primary btn-xs" id="docCompCargarBtn" onclick="iniciarCargaCartaCompromiso()">Registrar</button>
+              <input type="file" id="docCompInput" accept=".pdf,.doc,.docx" style="display:none" onchange="manejarCargaCartaCompromiso(this)">
             </div>
+            <div class="doc-upload-list" id="docCompLista" aria-live="polite"></div>
           </div>
         </div>
       </div>
 
     </div>
 
+    <div class="card" style="margin-bottom:16px">
+      <div class="card-header"><h3>Unidades Productivas · Sincronización con Core</h3></div>
+      <div class="card-body" style="display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap">
+        <div>
+          <div style="font-size:13px;font-weight:700;color:var(--text)">Última consulta al Core: unidades disponibles para PMCV</div>
+          <div style="font-size:11.5px;color:var(--muted);margin-top:4px">3 unidades encontradas · 2 activas para el programa · origen: Core Flor Ecuador</div>
+        </div>
+        <div style="display:flex;gap:8px;align-items:center">
+          <span id="coreSyncEstado" class="badge badge-ok">Sin inconsistencias</span>
+          <button class="btn btn-outline btn-sm" onclick="simularInconsistenciaCore()">Simular inconsistencia</button>
+        </div>
+      </div>
+      <div id="coreAlertaSara" style="display:none;margin:0 16px 16px;padding:11px 13px;background:#fff4e5;border:1px solid #f0b55e;border-radius:5px;font-size:12px;color:#7a5200">
+        <strong>Alerta preparada para Sara:</strong> la unidad <em>FINCA 5</em> no coincide con el Core. Se requerirá revisión antes de incluirla en PMCV.
+      </div>
+    </div>
 
     <!-- CARD: SUCURSALES Y UNIDADES OPERATIVAS -->
     <div class="card">
@@ -1223,6 +1245,7 @@
                 <th>Código</th>
                 <th>Nombre Comercial</th>
                 <th>Nombre Finca</th>
+                <th>Nombre del Proyecto</th>
                 <th>Dirección</th>
                 <th>Provincia</th>
                 <th>Cantón</th>
@@ -1238,6 +1261,7 @@
                 <td class="td-code">001</td>
                 <td><input class="inline-input" value="MATRIZ" style="min-width:120px"></td>
                 <td><input class="inline-input" value="PRINCIPAL" style="min-width:120px"></td>
+                <td><input class="inline-input" value="" placeholder="Nombre para programa" style="min-width:150px"></td>
                 <td><input class="inline-input" value="cumbaya la primavera" style="min-width:150px"></td>
                 <td><input class="inline-input" value="PICHINCHA" style="min-width:95px"></td>
                 <td><input class="inline-input" value="QUITO" style="min-width:85px"></td>
@@ -1260,6 +1284,7 @@
                 <td class="td-code">002</td>
                 <td><input class="inline-input" value="FINCA 2" style="min-width:120px"></td>
                 <td><input class="inline-input" value="FINCA 2" style="min-width:120px"></td>
+                <td><input class="inline-input" value="" placeholder="Nombre para programa" style="min-width:150px"></td>
                 <td><input class="inline-input" value="DIRECCION" style="min-width:150px"></td>
                 <td><input class="inline-input" value="PICHINCHA" style="min-width:95px"></td>
                 <td><input class="inline-input" value="QUITO" style="min-width:85px"></td>
@@ -1282,6 +1307,7 @@
                 <td class="td-code">005</td>
                 <td><input class="inline-input" value="FINCA 5" style="min-width:120px"></td>
                 <td><input class="inline-input" value="FINCA 5" style="min-width:120px"></td>
+                <td><input class="inline-input" value="" placeholder="Nombre para programa" style="min-width:150px"></td>
                 <td><input class="inline-input" value="" style="min-width:150px"></td>
                 <td><input class="inline-input" value="" style="min-width:95px"></td>
                 <td><input class="inline-input" value="" style="min-width:85px"></td>
@@ -1409,11 +1435,22 @@
 
             <div class="planif-row">
               <span class="planif-label">Fecha Inicio</span>
-              <input type="date" class="planif-input" id="planifFechaInicio" value="2026-02-01" style="text-align:left;padding-right:8px">
+              <input type="date" class="planif-input" id="planifFechaInicio" style="text-align:left;padding-right:8px">
             </div>
             <div class="planif-row">
               <span class="planif-label">Fecha Fin</span>
-              <input type="date" class="planif-input" id="planifFechaFin" value="2026-11-30" style="text-align:left;padding-right:8px">
+              <input type="date" class="planif-input" id="planifFechaFin" style="text-align:left;padding-right:8px">
+            </div>
+            <div id="planifExtensionFechas" style="display:none;padding:10px 12px;border-bottom:1px solid var(--border);background:#faf5fd">
+              <div style="display:flex;align-items:center;justify-content:space-between;gap:10px">
+                <span class="planif-label" style="width:auto">Extender fecha final</span>
+                <div style="display:flex;align-items:center;gap:6px">
+                  <input type="number" id="planifMesesExtension" min="1" max="24" value="1" aria-label="Meses a agregar" style="width:50px;padding:4px 6px;border:1px solid var(--border);border-radius:2px;text-align:center;font-family:'IBM Plex Mono',monospace">
+                  <span style="font-size:11px;color:var(--muted)">mes(es)</span>
+                  <button class="btn btn-outline btn-xs" type="button" onclick="agregarMesesFechaFin()">Agregar</button>
+                </div>
+              </div>
+              <div id="planifExtensionEstado" style="display:none;margin-top:6px;font-size:10.5px;color:#1e8449"></div>
             </div>
             <div class="planif-row planif-row-area">
               <span class="planif-label" style="padding-bottom:6px">Criterio de Selección<br><span class="planif-sublabel">Grupo Objetivo</span></span>
@@ -1444,7 +1481,7 @@
                   Reemplazar
                 </button>
               </div>
-              <input type="file" id="planifDocInput" accept=".doc,.docx,.pdf" style="display:none" onchange="planifCargarDoc(this.files[0])">
+              <input type="file" id="planifDocInput" accept=".doc,.docx" style="display:none" onchange="planifCargarDoc(this.files[0])">
 
               <!-- Nota de observación -->
               <div class="form-field">
@@ -1457,7 +1494,7 @@
           </div>
           <div class="form-footer">
             <button class="btn btn-outline">Cancelar</button>
-            <button class="btn btn-primary">
+            <button class="btn btn-primary" id="btnGuardarPlanificacion" type="button" onclick="guardarPlanificacion()">
               <svg width="13" height="13" viewBox="0 0 14 14" fill="none"><path d="M2 7l3.5 3.5L12 3.5" stroke="#fff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
               Guardar Planificación
             </button>
@@ -1470,7 +1507,7 @@
       <div class="card" style="margin-bottom:16px">
         <div class="card-header">
           <h3>Familias Beneficiadas — Planificación Mensual</h3>
-          <div style="display:flex;align-items:center;gap:10px">
+          <div id="famPlanificacionControles" style="display:none;align-items:center;gap:10px">
             <div style="display:flex;align-items:center;gap:5px;font-size:11px">
               <span class="fam-badge fam-aldia">Al día</span>
               <span class="fam-badge fam-retraso">Con retraso</span>
@@ -1488,6 +1525,12 @@
           </div>
         </div>
 
+        <div id="famPlanificacionPendiente" class="alert alert-blue" style="margin:14px 16px">
+          <span class="alert-icon">ℹ</span>
+          <span class="alert-text"><strong>Configure el período primero.</strong> Ingrese la Fecha Inicio y la Fecha Fin para habilitar la planificación mensual de familias.</span>
+        </div>
+
+        <div id="famPlanificacionContenido" style="display:none">
         <!-- Scorecards resumen -->
         <div class="fam-summary" id="famSummary">
           <div class="fam-summary-item">
@@ -1532,6 +1575,7 @@
             </tfoot>
           </table>
         </div>
+        </div>
       </div><!-- /familias -->
 
       <!-- ROW 2: Planificado vs Ejecutado (única card, full width) -->
@@ -1540,34 +1584,40 @@
           <h3>Planificado vs Ejecutado de Diagnósticos</h3>
         </div>
         <div class="card-body" style="padding:0">
+          <div id="diagPlanificacionPendiente" class="alert alert-blue" style="margin:14px 16px">
+            <span class="alert-icon">ℹ</span>
+            <span class="alert-text"><strong>Configure el período primero.</strong> El avance de diagnósticos se calculará al definir las fechas de inicio y fin.</span>
+          </div>
+          <div id="diagPlanificacionContenido" style="display:none">
           <div class="scorecard">
             <div class="scorecard-item">
               <span class="scorecard-label">Planificados</span>
-              <span class="scorecard-value" style="color:var(--purple)">85</span>
+              <span class="scorecard-value" id="diagPlanificados" style="color:var(--purple)">—</span>
               <span class="scorecard-sub">diagnósticos</span>
             </div>
             <div class="scorecard-divider"></div>
             <div class="scorecard-item">
-              <span class="scorecard-label">Ejecutados</span>
-              <span class="scorecard-value" style="color:var(--green)">42</span>
-              <span class="scorecard-sub">realizados</span>
+              <span class="scorecard-label">Ejecutados al corte</span>
+              <span class="scorecard-value" id="diagEjecutados" style="color:var(--green)">—</span>
+              <span class="scorecard-sub">según el período</span>
             </div>
             <div class="scorecard-divider"></div>
             <div class="scorecard-item">
               <span class="scorecard-label">Progreso</span>
-              <span class="scorecard-value" style="color:#1565c0">49.4%</span>
-              <span class="scorecard-sub">completado</span>
+              <span class="scorecard-value" id="diagProgreso" style="color:#1565c0">—</span>
+              <span class="scorecard-sub">al corte de hoy</span>
             </div>
           </div>
           <!-- Progress bar -->
           <div style="padding:0 14px 14px">
             <div style="background:#e8e8e8;border-radius:1px;height:6px;overflow:hidden">
-              <div style="width:49.4%;height:100%;background:#1565c0;border-radius:1px"></div>
+              <div id="diagBarra" style="width:0;height:100%;background:#1565c0;border-radius:1px;transition:width .25s ease"></div>
             </div>
             <div style="display:flex;justify-content:space-between;margin-top:4px">
               <span style="font-size:10px;color:var(--muted-light)">0</span>
-              <span style="font-size:10px;color:var(--muted-light)">85 diagnósticos planificados</span>
+              <span id="diagPie" style="font-size:10px;color:var(--muted-light)">—</span>
             </div>
+          </div>
           </div>
         </div>
       </div><!-- /ROW 2 -->
@@ -1582,7 +1632,7 @@
         <div class="card-header" style="display:flex;align-items:center;justify-content:space-between">
           <div style="display:flex;align-items:center;gap:10px">
             <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><rect x="2" y="1" width="12" height="14" rx="1.5" fill="#f3eaf7" stroke="var(--purple)" stroke-width="1.3"/><path d="M5 5h6M5 8h6M5 11h4" stroke="var(--purple)" stroke-width="1.2" stroke-linecap="round"/></svg>
-            <h3 style="margin:0">Planificación PMCV</h3>
+            <h3 style="margin:0">Seguimiento y Verificación del Plan de Acción</h3>
           </div>
           <span id="implEstadoBadge" class="badge"></span>
         </div>
@@ -1593,6 +1643,11 @@
         </div>
 
         <div class="card-body" style="display:flex;flex-direction:column;gap:20px">
+
+          <div style="padding:10px 12px;background:#f3eaf7;border:1px solid #d7c0e0;border-radius:5px;font-size:12px;color:var(--purple);display:flex;justify-content:space-between;gap:10px;align-items:center;flex-wrap:wrap">
+            <span><strong>Finca en gestión:</strong> <span id="implFincaActual">001 · MATRIZ</span> · el plazo, evidencia y aprobación se registran por finca.</span>
+            <span style="font-size:11px">Recordatorio mensual: <strong>activo</strong></span>
+          </div>
 
           <!-- ── ZONA ADMIN: configurar fecha límite ── -->
           <div id="implZonaAdmin" style="display:none">
@@ -1651,6 +1706,7 @@
                   Subir Planificación
                 </button>
               </div>
+              <div id="implAvisoCarga" style="display:none;margin-top:10px;padding:9px 11px;background:#eef8ff;border:1px solid #90caf9;border-radius:5px;font-size:11.5px;color:#1565c0">Notificación preparada para Vale y Thali: se cargó el plan de acción de esta finca.</div>
             </div>
 
             <!-- Estado: plan subido — normal (verde) -->
@@ -2064,6 +2120,8 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
     if (n === 2 && fincaCod) {
       document.getElementById('fincaBadge').innerHTML =
         '<strong style="color:var(--purple)">' + fincaCod + '</strong> · ' + fincaNombre;
+      const fincaPlan = document.getElementById('implFincaActual');
+      if (fincaPlan) fincaPlan.textContent = fincaCod + ' · ' + fincaNombre;
     }
   }
 
@@ -2093,17 +2151,13 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
 
   const MESES = ['Enero','Febrero','Marzo','Abril','Mayo','Junio',
                  'Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+  const DIAGNOSTICOS_PLANIFICADOS = 85;
+  let planificacionGuardada = false;
 
-  // Plan mensual ingresado por el usuario (lo que la finca declaró por mes)
-  const famPlan = new Array(12).fill(0);
-  // Real reportado por mes
-  const famReal = new Array(12).fill(0);
-
-  // Mes actual del sistema
-  const HOY_MES = new Date().getMonth();
-
-  // Registro de correos de seguimiento enviados por mes (índice 0-11)
-  const famCorreoEnviado = new Array(12).fill(false);
+  // Datos por período YYYY-MM: admiten planificaciones que cruzan años.
+  const famPlan = {};
+  const famReal = {};
+  const famCorreoEnviado = {};
 
   /* ── Modal: correo de seguimiento mensual (requiere PDF + Excel) ── */
   const famCorreoModal = { mes:null, pdf:null, xls:null };
@@ -2111,19 +2165,19 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
   function _famSlug(s) {
     return String(s).trim().replace(/\s+/g, '_').replace(/\.+$/, '');
   }
-  function _famNombreInforme(mesIdx) {
-    return _famSlug(`Informe ${MESES[mesIdx]} ${new Date().getFullYear()} ${EMPRESA_ACTUAL}`) + '.pdf';
+  function _famNombreInforme(periodo) {
+    return _famSlug(`Informe ${MESES[periodo.mes]} ${periodo.anio} ${EMPRESA_ACTUAL}`) + '.pdf';
   }
-  function _famNombreBaseDatos(mesIdx) {
-    return _famSlug(`Base de datos ${MESES[mesIdx]} ${new Date().getFullYear()} ${EMPRESA_ACTUAL}`) + '.xlsx';
+  function _famNombreBaseDatos(periodo) {
+    return _famSlug(`Base de datos ${MESES[periodo.mes]} ${periodo.anio} ${EMPRESA_ACTUAL}`) + '.xlsx';
   }
 
-  function famEnviarCorreoMes(i) {
-    famCorreoModal.mes = i;
+  function famEnviarCorreoMes(periodo) {
+    famCorreoModal.mes = periodo;
     famCorreoModal.pdf = null;
     famCorreoModal.xls = null;
 
-    document.getElementById('famCorreoModalMes').textContent = `${MESES[i]} ${new Date().getFullYear()}`;
+    document.getElementById('famCorreoModalMes').textContent = `${MESES[periodo.mes]} ${periodo.anio}`;
 
     document.getElementById('famPdfPreview').style.display = 'none';
     document.getElementById('famPdfDropZone').style.display = '';
@@ -2197,8 +2251,8 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
 
   function confirmarFamCorreo() {
     if (!famCorreoModal.pdf || !famCorreoModal.xls) return;
-    const i = famCorreoModal.mes;
-    famCorreoEnviado[i] = true;
+    const periodo = famCorreoModal.mes;
+    famCorreoEnviado[periodo.clave] = true;
     cerrarModalFamCorreo();
     renderFamilias();
   }
@@ -2208,15 +2262,116 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
     document.getElementById('planifDocNombre').textContent = file.name;
   }
 
-  /* Devuelve {mesIni, mesFin} según los date inputs de Configuración */
+  /* Devuelve cada mes del período, incluso si cruza de un año al siguiente. */
   function famRango() {
-    const inputs = document.querySelectorAll('#tab-planif input[type="date"]');
-    const ini = inputs[0]?.value || '2026-02-01';
-    const fin = inputs[1]?.value || '2026-11-30';
-    return {
-      mesIni: new Date(ini + 'T00:00').getMonth(),
-      mesFin: new Date(fin + 'T00:00').getMonth()
-    };
+    const inicio = document.getElementById('planifFechaInicio')?.value;
+    const fin = document.getElementById('planifFechaFin')?.value;
+    if (!inicio || !fin || inicio > fin) return null;
+
+    const fechaInicio = new Date(inicio + 'T00:00');
+    const fechaFin = new Date(fin + 'T00:00');
+    const cursor = new Date(fechaInicio.getFullYear(), fechaInicio.getMonth(), 1);
+    const ultimoMes = new Date(fechaFin.getFullYear(), fechaFin.getMonth(), 1);
+    const meses = [];
+
+    while (cursor <= ultimoMes) {
+      const mes = cursor.getMonth();
+      const anio = cursor.getFullYear();
+      meses.push({ clave:`${anio}-${String(mes + 1).padStart(2, '0')}`, mes, anio, fecha:new Date(cursor) });
+      cursor.setMonth(cursor.getMonth() + 1);
+    }
+    return { meses };
+  }
+
+  function actualizarEstadoPlanificacion() {
+    const rango = famRango();
+    const inicio = document.getElementById('planifFechaInicio')?.value;
+    const fin = document.getElementById('planifFechaFin')?.value;
+    const pendiente = document.getElementById('famPlanificacionPendiente');
+    const contenido = document.getElementById('famPlanificacionContenido');
+    const controles = document.getElementById('famPlanificacionControles');
+    const diagPendiente = document.getElementById('diagPlanificacionPendiente');
+    const diagContenido = document.getElementById('diagPlanificacionContenido');
+
+    if (rango) {
+      pendiente.style.display = 'none';
+      contenido.style.display = '';
+      controles.style.display = 'flex';
+      diagPendiente.style.display = 'none';
+      diagContenido.style.display = '';
+      renderFamilias();
+      renderDiagnosticos();
+      return;
+    }
+
+    contenido.style.display = 'none';
+    controles.style.display = 'none';
+    pendiente.style.display = 'flex';
+    diagContenido.style.display = 'none';
+    diagPendiente.style.display = 'flex';
+    pendiente.querySelector('.alert-text').innerHTML = inicio && fin && inicio > fin
+      ? '<strong>Revise el período.</strong> La Fecha Fin debe ser posterior o igual a la Fecha Inicio.'
+      : inicio && fin
+        ? '<strong>Revise el período configurado.</strong> Seleccione una Fecha Fin posterior o igual a la Fecha Inicio.'
+        : '<strong>Configure el período primero.</strong> Ingrese la Fecha Inicio y la Fecha Fin para habilitar la planificación mensual de familias.';
+  }
+
+  function guardarPlanificacion() {
+    if (!famRango()) {
+      actualizarEstadoPlanificacion();
+      return;
+    }
+
+    planificacionGuardada = true;
+    document.getElementById('planifFechaInicio').disabled = true;
+    document.getElementById('planifFechaFin').disabled = true;
+    document.getElementById('planifExtensionFechas').style.display = 'block';
+
+    const boton = document.getElementById('btnGuardarPlanificacion');
+    boton.disabled = true;
+    boton.style.opacity = '.72';
+    boton.style.cursor = 'default';
+    boton.innerHTML = '✓ Planificación guardada';
+    actualizarEstadoPlanificacion();
+  }
+
+  function agregarMesesFechaFin() {
+    if (!planificacionGuardada) return;
+
+    const campoFin = document.getElementById('planifFechaFin');
+    const meses = parseInt(document.getElementById('planifMesesExtension').value, 10);
+    if (!campoFin?.value || !Number.isInteger(meses) || meses < 1) return;
+
+    const [anio, mes, dia] = campoFin.value.split('-').map(Number);
+    const nuevaBase = new Date(anio, mes - 1 + meses, 1);
+    const ultimoDia = new Date(nuevaBase.getFullYear(), nuevaBase.getMonth() + 1, 0).getDate();
+    const nuevoFin = new Date(nuevaBase.getFullYear(), nuevaBase.getMonth(), Math.min(dia, ultimoDia));
+    campoFin.value = `${nuevoFin.getFullYear()}-${String(nuevoFin.getMonth() + 1).padStart(2, '0')}-${String(nuevoFin.getDate()).padStart(2, '0')}`;
+
+    document.getElementById('planifExtensionEstado').textContent = `Fecha final extendida ${meses} ${meses === 1 ? 'mes' : 'meses'}.`;
+    document.getElementById('planifExtensionEstado').style.display = 'block';
+    actualizarEstadoPlanificacion();
+  }
+
+  function renderDiagnosticos() {
+    const inicio = document.getElementById('planifFechaInicio')?.value;
+    const fin = document.getElementById('planifFechaFin')?.value;
+    if (!inicio || !fin) return;
+
+    const inicioMs = new Date(inicio + 'T00:00').getTime();
+    const finMs = new Date(fin + 'T00:00').getTime();
+    const hoy = new Date();
+    hoy.setHours(0, 0, 0, 0);
+    const totalDias = Math.max(1, Math.round((finMs - inicioMs) / 86400000) + 1);
+    const diasTranscurridos = Math.max(0, Math.min(totalDias, Math.round((hoy.getTime() - inicioMs) / 86400000) + 1));
+    const porcentaje = Math.round((diasTranscurridos / totalDias) * 100);
+    const ejecutados = Math.round((DIAGNOSTICOS_PLANIFICADOS * porcentaje) / 100);
+
+    document.getElementById('diagPlanificados').textContent = DIAGNOSTICOS_PLANIFICADOS;
+    document.getElementById('diagEjecutados').textContent = ejecutados;
+    document.getElementById('diagProgreso').textContent = `${porcentaje}%`;
+    document.getElementById('diagBarra').style.width = `${porcentaje}%`;
+    document.getElementById('diagPie').textContent = `${DIAGNOSTICOS_PLANIFICADOS} diagnósticos planificados · ${diasTranscurridos} de ${totalDias} días transcurridos`;
   }
 
   /* Estado de un mes — sin "En proceso": si no llega al plan = Con retraso */
@@ -2234,7 +2389,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
     return                                    { cls:'fam-retraso',   txt:'Con retraso' };
   }
 
-  /* Estado global — mismo totalPlan y totalPlanActivo */
+  /* Estado global: el total mensual es la única fuente para porcentajes y estado. */
   function famEstadoGlobal(totalReal, totalPlan, totalPlanActivo) {
     if (totalPlan > 0 && totalReal >= totalPlan)
                                        return { cls:'fam-completo',  txt:'Finalizado'  };
@@ -2288,6 +2443,8 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
     implState.revision    = null;
     implState.observacion = null;
     implRender();
+    const aviso = document.getElementById('implAvisoCarga');
+    if (aviso) aviso.style.display = 'block';
   }
 
   function implDescargar() {
@@ -2661,14 +2818,16 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
     const tbody = document.getElementById('famTbody');
     if (!tbody) return;
 
-    const { mesIni, mesFin } = famRango();
+    const rango = famRango();
+    if (!rango) return;
+    const { meses } = rango;
 
     // Paso 1 — totalDeclarado = lo que ingresó el usuario en el header
     const totalDeclarado = parseInt(document.getElementById('famObjetivo')?.value) || 0;
 
     // totalPlan = suma mensual ingresada (debe coincidir con totalDeclarado)
     let totalPlan = 0;
-    for (let i = mesIni; i <= mesFin; i++) totalPlan += famPlan[i] || 0;
+    for (const periodo of meses) totalPlan += famPlan[periodo.clave] || 0;
 
     // Indicador de diferencia: ¿la suma de meses cuadra con lo declarado?
     const diffEl = document.getElementById('famDiffBadge');
@@ -2687,11 +2846,15 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
     // Paso 2 — recorrer meses para construir filas y acumular totales activos
     let totalPlanActivo = 0, totalReal = 0, acumReal = 0, rows = '';
 
-    for (let i = mesIni; i <= mesFin; i++) {
-      const esPasado = i < HOY_MES;
-      const esActual = i === HOY_MES;
-      const plan     = famPlan[i] || 0;
-      const real     = famReal[i] || 0;
+    const primerMesActual = new Date();
+    primerMesActual.setDate(1);
+    primerMesActual.setHours(0, 0, 0, 0);
+
+    for (const periodo of meses) {
+      const esPasado = periodo.fecha < primerMesActual;
+      const esActual = periodo.fecha.getTime() === primerMesActual.getTime();
+      const plan     = famPlan[periodo.clave] || 0;
+      const real     = famReal[periodo.clave] || 0;
 
       if (esPasado || esActual) {
         totalPlanActivo += plan;
@@ -2699,27 +2862,27 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
         acumReal        += real;
       }
 
-      const est    = famEstadoMes(plan, real, esPasado || esActual, acumReal, totalDeclarado);
+      const est    = famEstadoMes(plan, real, esPasado || esActual, acumReal, totalPlan);
       const rowCls = esActual ? 'mes-actual' : (esPasado ? 'mes-pasado' : '');
       const mesTxt = esActual
-        ? `<strong>${MESES[i]}</strong>&nbsp;<span style="font-size:10px;color:var(--purple);font-weight:700">← actual</span>`
-        : MESES[i];
+        ? `<strong>${MESES[periodo.mes]} ${periodo.anio}</strong>&nbsp;<span style="font-size:10px;color:var(--purple);font-weight:700">← actual</span>`
+        : `${MESES[periodo.mes]} ${periodo.anio}`;
 
       rows += `<tr class="${rowCls}">
         <td>${mesTxt}</td>
         <td><input class="fam-input" type="number" min="0" value="${plan||''}" placeholder="0"
-              oninput="famPlan[${i}]=+this.value;renderFamilias()"></td>
+              oninput="famPlan['${periodo.clave}']=+this.value;renderFamilias()"></td>
         <td><input class="fam-input" type="number" min="0"
               value="${esPasado||esActual ? (real||'') : ''}"
               placeholder="${esPasado||esActual?'0':'—'}"
               ${!esPasado&&!esActual?'readonly':''}
-              oninput="famReal[${i}]=+this.value;renderFamilias()"></td>
+              oninput="famReal['${periodo.clave}']=+this.value;renderFamilias()"></td>
         <td><span class="fam-badge ${est.cls}">${est.txt}</span></td>
         <td style="text-align:center">
-          <button class="fam-mail-btn${famCorreoEnviado[i] ? ' sent' : ''}"
-            title="${famCorreoEnviado[i] ? 'Correo enviado — ' + MESES[i] : 'Enviar correo de seguimiento — ' + MESES[i]}"
-            onclick="famEnviarCorreoMes(${i})">
-            ${famCorreoEnviado[i]
+          <button class="fam-mail-btn${famCorreoEnviado[periodo.clave] ? ' sent' : ''}"
+            title="${famCorreoEnviado[periodo.clave] ? 'Correo enviado — ' + MESES[periodo.mes] + ' ' + periodo.anio : 'Enviar correo de seguimiento — ' + MESES[periodo.mes] + ' ' + periodo.anio}"
+            onclick="famEnviarCorreoMes({clave:'${periodo.clave}',mes:${periodo.mes},anio:${periodo.anio}})">
+            ${famCorreoEnviado[periodo.clave]
               ? `<svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 7l3.5 3.5L12 3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>`
               : `<svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="2" y="3.5" width="12" height="9" rx="1.5"/><path d="M2.5 4.5L8 9l5.5-4.5" stroke-linecap="round" stroke-linejoin="round"/></svg>`}
           </button>
@@ -2728,10 +2891,10 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
     }
     tbody.innerHTML = rows;
 
-    // Paso 3 — un solo % = totalReal / totalPlanActivo (meses vencidos+actual)
-    const pct   = totalPlanActivo > 0 ? Math.round(totalReal / totalPlanActivo * 100) : 0;
-    const pctTxt = totalPlanActivo > 0 ? pct + '%' : '—';
-    const glEst = famEstadoGlobal(totalReal, totalDeclarado || totalPlan, totalPlanActivo);
+    // Paso 3 — el porcentaje usa el mismo total que se muestra como planificado.
+    const pct   = totalPlan > 0 ? Math.round(totalReal / totalPlan * 100) : 0;
+    const pctTxt = totalPlan > 0 ? pct + '%' : '—';
+    const glEst = famEstadoGlobal(totalReal, totalPlan, totalPlanActivo);
 
     // Footer y scorecards usan EXACTAMENTE los mismos valores
     document.getElementById('footPlan').textContent    = totalPlan;
@@ -2746,16 +2909,10 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
 
   document.addEventListener('DOMContentLoaded', () => {
     implRender();
-    // Datos demo: finca declaró 300 familias distribuidas en Feb–Nov
-    famPlan[1]=25; famPlan[2]=28; famPlan[3]=30; famPlan[4]=30;
-    famPlan[5]=32; famPlan[6]=30; famPlan[7]=28; famPlan[8]=28;
-    famPlan[9]=30; famPlan[10]=39;
-    // Reales reportados hasta el mes anterior al actual
-    famReal[1]=24; famReal[2]=21; famReal[3]=30; famReal[4]=29;
-    renderFamilias();
-    // Recalcular si cambia el rango de fechas
+    actualizarEstadoPlanificacion();
+    // Recalcular y habilitar la tabla cuando el período sea válido.
     document.querySelectorAll('#tab-planif input[type="date"]')
-      .forEach(inp => inp.addEventListener('change', renderFamilias));
+      .forEach(inp => inp.addEventListener('change', actualizarEstadoPlanificacion));
   });
 
   /* ── PROGRAMA PMCV · PERSONAS ──────────────────────────── */
@@ -2888,16 +3045,31 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
   // Exportación de la ficha de la empresa actual (datos visibles en Card 1 y 2)
   // Resumen del avance de familias (mismo cálculo que renderFamilias, sin tocar el DOM)
   function _famResumenActual() {
-    const { mesIni, mesFin } = famRango();
-    const totalDeclarado = parseInt(document.getElementById('famObjetivo')?.value) || 0;
-    let totalPlan = 0;
-    for (let i = mesIni; i <= mesFin; i++) totalPlan += famPlan[i] || 0;
-    let totalPlanActivo = 0, totalReal = 0;
-    for (let i = mesIni; i <= mesFin; i++) {
-      if (i <= HOY_MES) { totalPlanActivo += famPlan[i] || 0; totalReal += famReal[i] || 0; }
+    const rango = famRango();
+    if (!rango) {
+      return {
+        pct: 0,
+        glEst: { cls:'fam-pendiente', txt:'Sin planif.' },
+        familiasFinalizadas: 0,
+        familiasActuales: 0,
+        publicoObjetivo: parseInt(document.getElementById('objTrab')?.value) || 0
+      };
     }
-    const pct   = totalPlanActivo > 0 ? Math.round(totalReal / totalPlanActivo * 100) : 0;
-    const glEst = famEstadoGlobal(totalReal, totalDeclarado || totalPlan, totalPlanActivo);
+    const { meses } = rango;
+    let totalPlan = 0;
+    for (const periodo of meses) totalPlan += famPlan[periodo.clave] || 0;
+    let totalPlanActivo = 0, totalReal = 0;
+    const primerMesActual = new Date();
+    primerMesActual.setDate(1);
+    primerMesActual.setHours(0, 0, 0, 0);
+    for (const periodo of meses) {
+      if (periodo.fecha <= primerMesActual) {
+        totalPlanActivo += famPlan[periodo.clave] || 0;
+        totalReal += famReal[periodo.clave] || 0;
+      }
+    }
+    const pct   = totalPlan > 0 ? Math.round(totalReal / totalPlan * 100) : 0;
+    const glEst = famEstadoGlobal(totalReal, totalPlan, totalPlanActivo);
     const familiasFinalizadas = glEst.txt === 'Finalizado' ? totalReal : 0;
     return { pct, glEst, familiasFinalizadas, familiasActuales: totalReal, publicoObjetivo: parseInt(document.getElementById('objTrab')?.value) || 0 };
   }
@@ -3106,6 +3278,128 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
   function quitarMentor(cod, pid) {
     asignaciones[cod].mentores = (asignaciones[cod].mentores||[]).filter(x=>x!==pid);
     renderFincas(); updateCard3Badges();
+  }
+
+  /* ── CARGA MASIVA: líderes y mentores por finca ── */
+  function descargarPlantillaLideresMentores() {
+    const headers = ['Código finca', 'Nombre', 'Apellido', 'Cargo', 'Correo', 'Teléfono'];
+    const rows = [['001', '', '', '', '', '']];
+    _descargarExcel('plantilla_carga_masiva_lideres_mentores.xlsx', headers, rows, 'Asignaciones PMCV');
+  }
+
+  function _normalizarCabeceraCargaMasiva(valor) {
+    return String(valor || '').trim().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/\s+/g, ' ');
+  }
+
+  function _normalizarFilaCargaMasiva(fila) {
+    const datos = {};
+    Object.entries(fila).forEach(([clave, valor]) => { datos[_normalizarCabeceraCargaMasiva(clave)] = String(valor || '').trim(); });
+    return {
+      finca: String(datos['codigo finca'] || datos.finca || '').trim(),
+      nombre: String(datos.nombre || '').trim(),
+      apellido: String(datos.apellido || '').trim(),
+      cargo: String(datos.cargo || '').trim(),
+      correo: String(datos.correo || datos.email || '').trim(),
+      tel: String(datos.telefono || datos['teléfono'] || datos.tel || '').trim(),
+    };
+  }
+
+  function _fincaCargaMasiva(valor) {
+    const texto = String(valor || '').trim().toUpperCase();
+    return fincasCat.find(f => f.cod === texto || f.nombre.toUpperCase() === texto);
+  }
+
+  function _personaCargaMasiva(fila) {
+    const correo = fila.correo.toLowerCase();
+    return personas.find(p => (correo && p.correo?.toLowerCase() === correo) ||
+      (p.nombre.toLowerCase() === fila.nombre.toLowerCase() && p.apellido.toLowerCase() === fila.apellido.toLowerCase()));
+  }
+
+  function _nuevaPersonaCargaMasiva(fila) {
+    const mayorId = personas.reduce((mayor, p) => Math.max(mayor, parseInt(String(p.id).replace(/\D/g, ''), 10) || 0), 0);
+    const persona = {
+      id: `P${String(mayorId + 1).padStart(2, '0')}`,
+      nombre: fila.nombre, apellido: fila.apellido, cargo: fila.cargo,
+      correo: fila.correo, tel: fila.tel, usuario: _generarUsuarioCargaMasiva(fila),
+    };
+    personas.push(persona);
+    nextPersonaId = Math.max(nextPersonaId, mayorId + 1);
+    return persona;
+  }
+
+  function _generarUsuarioCargaMasiva(fila) {
+    const simplificar = texto => String(texto || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-zA-Z0-9]/g, '').toLowerCase();
+    const base = `${simplificar(fila.nombre).charAt(0)}${simplificar(fila.apellido)}` || 'usuario';
+    let candidato = base;
+    let sufijo = 2;
+    while (personas.some(p => p.usuario?.toLowerCase() === candidato)) candidato = `${base}${sufijo++}`;
+    return candidato;
+  }
+
+  function cargarMasivoLideresMentores(archivo) {
+    const input = document.getElementById('cargaMasivaLideresInput');
+    if (!archivo) return;
+    const estado = document.getElementById('cargaMasivaLideresEstado');
+    const lector = new FileReader();
+    lector.onload = ({ target }) => {
+      try {
+        const libro = XLSX.read(new Uint8Array(target.result), { type: 'array' });
+        const hoja = libro.Sheets[libro.SheetNames[0]];
+        const filas = XLSX.utils.sheet_to_json(hoja, { defval: '' }).map(_normalizarFilaCargaMasiva)
+          .filter(fila => fila.finca || fila.nombre || fila.apellido);
+        if (!filas.length) throw new Error('La plantilla no contiene filas con datos.');
+
+        let personasCreadas = 0;
+        let asignacionesCreadas = 0;
+        const errores = [];
+
+        filas.forEach((fila, indice) => {
+          const numeroFila = indice + 2;
+          const finca = _fincaCargaMasiva(fila.finca);
+          if (!finca || !fila.nombre || !fila.apellido) {
+            errores.push(`Fila ${numeroFila}: Código finca, nombre y apellido son obligatorios.`);
+            return;
+          }
+          if (fila.correo && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(fila.correo)) {
+            errores.push(`Fila ${numeroFila}: correo no válido.`);
+            return;
+          }
+
+          const asignacion = asignaciones[finca.cod] || (asignaciones[finca.cod] = { lider:null, mentores:[] });
+          let persona = _personaCargaMasiva(fila);
+          const rol = asignacion.lider ? 'mentor' : 'lider';
+          if (persona && rol === 'lider' && liderFincasCount(persona.id) >= 2) {
+            errores.push(`Fila ${numeroFila}: ${fila.nombre} ${fila.apellido} ya tiene el máximo de 2 fincas como líder.`);
+            return;
+          }
+
+          if (!persona) {
+            persona = _nuevaPersonaCargaMasiva(fila);
+            personasCreadas++;
+          }
+
+          if (rol === 'lider') {
+            if (asignacion.lider !== persona.id) { asignacion.lider = persona.id; asignacionesCreadas++; }
+          } else if (!asignacion.mentores.includes(persona.id)) {
+            asignacion.mentores.push(persona.id);
+            asignacionesCreadas++;
+          }
+        });
+
+        renderFincas();
+        if (typeof renderPersonasList === 'function') renderPersonasList();
+        estado.style.display = 'block';
+        estado.style.color = errores.length ? '#b7770d' : '#1e8449';
+        estado.textContent = `Importación completada: ${personasCreadas} persona(s) creada(s), ${asignacionesCreadas} asignación(es).${errores.length ? ` Se omitieron ${errores.length} fila(s): ${errores.slice(0, 2).join(' ')}` : ''}`;
+      } catch (error) {
+        estado.style.display = 'block';
+        estado.style.color = '#c0392b';
+        estado.textContent = error.message || 'No se pudo leer el archivo. Usa la plantilla Excel o un CSV válido.';
+      } finally {
+        input.value = '';
+      }
+    };
+    lector.readAsArrayBuffer(archivo);
   }
 
   /* ── VISTA: ASIGNAR ROL ── */
@@ -3334,9 +3628,21 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
       document.getElementById('fpCorreo').value    = p.correo;
       document.getElementById('fpTelefono').value  = p.tel;
       document.getElementById('fpUsuario').value   = p.usuario;
+      generarCredencialesPMCV();
     } else {
       document.getElementById('drawerFormPersonaTitle').textContent = 'Nueva Persona';
     }
+  }
+
+  function generarCredencialesPMCV() {
+    const nombre = document.getElementById('fpNombre').value.trim();
+    const apellido = document.getElementById('fpApellido').value.trim();
+    if (!nombre || !apellido) return;
+    const normalizar = valor => valor.normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/\s+/g, '');
+    const inicial = normalizar(nombre)[0].toLowerCase();
+    const apellidoNormalizado = normalizar(apellido).toLowerCase();
+    document.getElementById('fpUsuario').value = inicial + apellidoNormalizado;
+    document.getElementById('fpPass').value = inicial.toUpperCase() + apellidoNormalizado;
   }
 
   function fpVolver() {
@@ -3361,6 +3667,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
       correo:  document.getElementById('fpCorreo').value.trim(),
       tel:     document.getElementById('fpTelefono').value.trim(),
       usuario: document.getElementById('fpUsuario').value.trim(),
+      passwordDemo: document.getElementById('fpPass').value,
     };
 
     if (editingPersonaId) {
@@ -3500,6 +3807,11 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
     }
 
     body.innerHTML = `
+      <div style="padding:10px 12px;margin-bottom:12px;background:#f3eaf7;border:1px solid #d7c0e0;border-radius:5px;font-size:12px;color:var(--purple)">
+        <div><strong>Remitente:</strong> Vale &lt;vale@expoflores.ec&gt;</div>
+        <div style="margin-top:3px"><strong>Con copia:</strong> Thali &lt;thali@expoflores.ec&gt;</div>
+        <div style="margin-top:3px"><strong>Contenido:</strong> credenciales de los mentores de la empresa y resumen por líder.</div>
+      </div>
       <p style="font-size:12px;color:var(--muted);margin:0 0 12px">
         <strong>${seleccionadas.size}</strong> persona(s) recibirán sus credenciales de acceso al sistema PMCV:
       </p>
@@ -3611,6 +3923,82 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
     fechaDesadherencia:  null,
     ultimaActualizacion: '20/01/2022'
   };
+
+  const cartasCompromiso = [];
+  let indiceCartaAReemplazar = null;
+
+  function iniciarCargaCartaCompromiso() {
+    indiceCartaAReemplazar = null;
+    document.getElementById('docCompInput')?.click();
+  }
+
+  function manejarCargaCartaCompromiso(input) {
+    const archivo = input.files[0];
+    if (archivo) {
+      if (indiceCartaAReemplazar === null) {
+        registrarDocumentoAdherencia(archivo);
+      } else {
+        cartasCompromiso[indiceCartaAReemplazar] = { nombre: archivo.name || 'Carta sin nombre' };
+        renderCartasCompromiso();
+      }
+    }
+    indiceCartaAReemplazar = null;
+    input.value = '';
+  }
+
+  function registrarDocumentoAdherencia(file) {
+    if (!file) return;
+
+    cartasCompromiso.push({ nombre: file.name || 'Carta sin nombre' });
+    renderCartasCompromiso();
+  }
+
+  function renderCartasCompromiso() {
+    const titulo = document.getElementById('docCompNombre');
+    const boton = document.getElementById('docCompCargarBtn');
+    const lista = document.getElementById('docCompLista');
+    const cantidad = cartasCompromiso.length;
+
+    if (titulo) titulo.innerHTML = `<span class="icon-check">✔</span>Cartas de Compromiso · ${cantidad} ${cantidad === 1 ? 'cargada' : 'cargadas'}`;
+    if (boton) boton.textContent = 'Cargar otra';
+    if (!lista) return;
+
+    lista.replaceChildren(...cartasCompromiso.map((carta, indice) => {
+      const fila = document.createElement('div');
+      fila.className = 'doc-uploaded-file';
+
+      const archivo = document.createElement('strong');
+      archivo.textContent = `${indice + 1}. ${carta.nombre}`;
+      archivo.title = carta.nombre;
+
+      const reemplazar = document.createElement('button');
+      reemplazar.className = 'btn btn-outline btn-xs';
+      reemplazar.type = 'button';
+      reemplazar.textContent = 'Reemplazar';
+      reemplazar.onclick = () => reemplazarCartaCompromiso(indice);
+
+      fila.append(archivo, reemplazar);
+      return fila;
+    }));
+  }
+
+  function reemplazarCartaCompromiso(indice) {
+    const input = document.getElementById('docCompInput');
+    if (!input) return;
+    indiceCartaAReemplazar = indice;
+    input.click();
+  }
+
+  function simularInconsistenciaCore() {
+    const alerta = document.getElementById('coreAlertaSara');
+    const estado = document.getElementById('coreSyncEstado');
+    const activar = alerta && alerta.style.display === 'none';
+    if (alerta) alerta.style.display = activar ? 'block' : 'none';
+    if (estado) {
+      estado.textContent = activar ? 'Alerta a Sara pendiente' : 'Sin inconsistencias';
+      estado.className = activar ? 'badge badge-warn' : 'badge badge-ok';
+    }
+  }
 
   // Mapeo de estado → HTML badge Carmine (Card 3)
   const estadoBadge = {
@@ -3781,6 +4169,16 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
   <!-- ════ VISTA: POR FINCA ════ -->
   <div id="drawerViewFincas" style="display:flex;flex-direction:column;flex:1;overflow:hidden">
     <div class="drawer-body" style="overflow-y:auto">
+      <div style="margin-bottom:12px;padding:10px;border:1px solid #d9c9e4;background:#faf5fd;border-radius:4px">
+        <div style="font-size:11px;font-weight:700;color:var(--purple);text-transform:uppercase;letter-spacing:.4px;margin-bottom:6px">Carga masiva de líderes y mentores</div>
+        <div style="font-size:11px;color:var(--muted);line-height:1.4;margin-bottom:9px">Descarga la plantilla y completa una fila por persona. El sistema genera el usuario y asigna automáticamente el primer registro sin líder como líder; los siguientes serán mentores.</div>
+        <div style="display:flex;gap:6px;flex-wrap:wrap">
+          <button class="btn btn-outline btn-xs" type="button" onclick="descargarPlantillaLideresMentores()">↓ Descargar plantilla</button>
+          <button class="btn btn-primary btn-xs" type="button" onclick="document.getElementById('cargaMasivaLideresInput').click()">↑ Cargar archivo</button>
+          <input id="cargaMasivaLideresInput" type="file" accept=".xlsx,.xls,.csv" style="display:none" onchange="cargarMasivoLideresMentores(this.files[0])">
+        </div>
+        <div id="cargaMasivaLideresEstado" aria-live="polite" style="display:none;margin-top:8px;font-size:10.5px;line-height:1.4"></div>
+      </div>
       <div id="fincaAccordion"></div>
       <button class="btn-asignar-vacio" style="margin-top:4px;border-style:solid;color:var(--purple);border-color:var(--purple)"
         onclick="drawerShowFormPersona(null,'finca')">
@@ -3839,11 +4237,11 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px">
         <div class="form-field">
           <label class="form-label">Nombre <span style="color:#e74c3c">*</span></label>
-          <input type="text" class="form-input" id="fpNombre" placeholder="Ej: María">
+          <input type="text" class="form-input" id="fpNombre" placeholder="Ej: Alberth" oninput="generarCredencialesPMCV()">
         </div>
         <div class="form-field">
           <label class="form-label">Apellido <span style="color:#e74c3c">*</span></label>
-          <input type="text" class="form-input" id="fpApellido" placeholder="Ej: Vásquez">
+          <input type="text" class="form-input" id="fpApellido" placeholder="Ej: García" oninput="generarCredencialesPMCV()">
         </div>
       </div>
       <p class="drawer-section-title">2 · Contacto y Cargo</p>
@@ -3861,22 +4259,8 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
           <input type="text" class="form-input" id="fpCargo" placeholder="Ej: Supervisor Técnico">
         </div>
       </div>
-      <p class="drawer-section-title">3 · Credenciales de Acceso</p>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:20px">
-        <div class="form-field">
-          <label class="form-label">Usuario</label>
-          <input type="text" class="form-input" id="fpUsuario" placeholder="usuario_plataforma">
-        </div>
-        <div class="form-field">
-          <label class="form-label">Contraseña</label>
-          <div class="form-input-icon">
-            <input type="password" class="form-input" id="fpPass" placeholder="••••••••">
-            <span class="input-icon" style="cursor:pointer" onclick="togglePassFP()">
-              <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><ellipse cx="7" cy="7" rx="5" ry="3" stroke="currentColor" stroke-width="1.3"/><circle cx="7" cy="7" r="1.5" stroke="currentColor" stroke-width="1.3"/></svg>
-            </span>
-          </div>
-        </div>
-      </div>
+      <input type="hidden" id="fpUsuario">
+      <input type="hidden" id="fpPass">
       <div class="alert alert-blue" style="margin-bottom:16px">
         <span class="alert-icon">ℹ</span>
         <span class="alert-text" style="font-size:12px">La asignación a fincas como <strong>Líder</strong> o <strong>Mentor</strong> se realiza desde la vista <em>Por Finca</em> después de registrar a la persona.</span>
