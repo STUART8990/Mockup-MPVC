@@ -1360,6 +1360,14 @@
       </a>
     </div>
     <div class="page-actions">
+      <div id="planifAccionesGuardadas" style="display:none;position:relative">
+        <button class="btn btn-outline btn-sm" type="button" onclick="alternarMenuPlanificacionArchivada()" aria-haspopup="menu" aria-expanded="false" id="btnMenuPlanificacionArchivada">⚙ Acciones</button>
+        <div id="menuPlanificacionArchivada" role="menu" style="display:none;position:absolute;right:0;top:calc(100% + 5px);z-index:20;min-width:190px;background:#fff;border:1px solid var(--border);box-shadow:0 4px 14px rgba(0,0,0,.16);border-radius:3px;padding:5px">
+          <button class="btn" type="button" role="menuitem" style="width:100%;justify-content:flex-start;text-align:left;background:transparent;color:var(--text);padding:8px 10px" onclick="abrirModalArchivarPlanificacion()">▣ Archivar planificación</button>
+          <button class="btn" type="button" role="menuitem" style="width:100%;justify-content:flex-start;text-align:left;background:transparent;color:var(--text);padding:8px 10px" onclick="abrirHistorialPlanificaciones()">◷ Historial de archivadas</button>
+        </div>
+      </div>
+      <button class="btn btn-outline btn-sm" id="btnHistorialArchivadasGlobal" type="button" style="display:none" onclick="abrirHistorialPlanificaciones()">◷ Historial (0)</button>
       <button class="btn btn-primary btn-sm" id="btnCargaMasivaPlanificacion" type="button" onclick="abrirCargaMasivaPlanificacion()" disabled title="Selecciona una finca para cargar una planificación">
         ↑ Carga masiva
       </button>
@@ -1459,16 +1467,17 @@
               <textarea id="planifCriterio" class="planif-textarea" placeholder="Describa el criterio de selección del grupo objetivo para este programa...">Trabajadores de área de postcosecha y cultivo con más de 6 meses de antigüedad y que no hayan participado en programas PMCV anteriores.</textarea>
             </div>
 
-            <div style="padding:10px 12px 12px">
-              <div class="alert alert-blue" style="align-items:flex-start">
+            <div id="planifParametrosCorreo">
+              <div style="padding:10px 12px 12px">
+                <div class="alert alert-blue" style="align-items:flex-start">
                 <span style="font-size:16px;flex-shrink:0;margin-top:1px">🕐</span>
                 <span class="alert-text">
                   <strong>Recordatorios Automáticos:</strong> Se enviarán correos desde el buzón de <strong>Vale</strong> con copia a <strong>Thali</strong> <em>1 mes</em> y <em>1 semana</em> antes del inicio del programa.
                 </span>
+                </div>
               </div>
-            </div>
 
-            <div style="border-top:1px solid var(--border);padding:14px 12px 4px">
+              <div style="border-top:1px solid var(--border);padding:14px 12px 4px">
               <div style="font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px">Adjuntos y Notas de Correo</div>
 
               <!-- Documento adjunto: subido o zona de carga -->
@@ -1490,6 +1499,7 @@
                 <label class="form-label">Nota de Observación</label>
                 <textarea class="planif-textarea" style="min-height:70px" placeholder="Escriba una nota adicional que se incluirá al final del correo de notificación automática..."></textarea>
                 <span style="font-size:10.5px;color:var(--muted-light);margin-top:3px">Esta nota se adjuntará como párrafo final en el correo de recordatorio.</span>
+              </div>
               </div>
             </div>
 
@@ -2170,6 +2180,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
   const DIAGNOSTICOS_PLANIFICADOS = 85;
   let planificacionGuardada = false;
   const historialCambiosFechaFin = [];
+  const historicoPlanificaciones = [];
 
   // Datos por período YYYY-MM: admiten planificaciones que cruzan años.
   const famPlan = {};
@@ -2479,9 +2490,15 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
     }
 
     planificacionGuardada = true;
+    document.getElementById('totalTrab').disabled = true;
+    document.getElementById('objTrab').disabled = true;
+    document.getElementById('famObjetivo').disabled = true;
+    document.getElementById('planifCriterio').disabled = true;
     document.getElementById('planifFechaInicio').disabled = true;
     document.getElementById('planifFechaFin').disabled = true;
+    document.getElementById('planifParametrosCorreo').style.display = 'none';
     document.getElementById('planifExtensionFechas').style.display = 'block';
+    document.getElementById('planifAccionesGuardadas').style.display = 'block';
 
     const boton = document.getElementById('btnGuardarPlanificacion');
     boton.disabled = true;
@@ -2550,6 +2567,186 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
 
   function cerrarHistorialCambiosFechaFin() {
     document.getElementById('modalHistorialCambiosFechaFin').classList.remove('open');
+  }
+
+  function alternarMenuPlanificacionArchivada() {
+    if (!planificacionGuardada) return;
+    const menu = document.getElementById('menuPlanificacionArchivada');
+    const boton = document.getElementById('btnMenuPlanificacionArchivada');
+    const visible = menu.style.display === 'block';
+    menu.style.display = visible ? 'none' : 'block';
+    boton.setAttribute('aria-expanded', String(!visible));
+  }
+
+  function cerrarMenuPlanificacionArchivada() {
+    document.getElementById('menuPlanificacionArchivada').style.display = 'none';
+    document.getElementById('btnMenuPlanificacionArchivada').setAttribute('aria-expanded', 'false');
+  }
+
+  function abrirModalArchivarPlanificacion() {
+    if (!planificacionGuardada) return;
+    cerrarMenuPlanificacionArchivada();
+    document.getElementById('planifMotivoArchivo').value = '';
+    document.getElementById('planifMotivoArchivoError').style.display = 'none';
+    document.getElementById('modalArchivarPlanificacion').classList.add('open');
+  }
+
+  function cerrarModalArchivarPlanificacion() {
+    document.getElementById('modalArchivarPlanificacion').classList.remove('open');
+  }
+
+  function _textoElemento(id, alternativa = '—') {
+    return document.getElementById(id)?.textContent.trim() || alternativa;
+  }
+
+  function _fechaLegible(fecha) {
+    return fecha ? fecha.split('-').reverse().join('/') : '—';
+  }
+
+  function confirmarArchivadoPlanificacion() {
+    if (!planificacionGuardada) return;
+    const motivo = document.getElementById('planifMotivoArchivo').value.trim();
+    const error = document.getElementById('planifMotivoArchivoError');
+    if (!motivo) {
+      error.style.display = 'block';
+      return;
+    }
+
+    const rango = famRango();
+    if (!rango) return;
+    const snapshot = {
+      archivadoEn: new Date(),
+      motivo,
+      finca: { ...(fincaPlanificacionActual || { cod:'—', nombre:'Sin finca' }) },
+      configuracion: {
+        totalTrabajadores: document.getElementById('totalTrab').value,
+        trabajadoresObjetivo: document.getElementById('objTrab').value,
+        fechaInicio: document.getElementById('planifFechaInicio').value,
+        fechaFin: document.getElementById('planifFechaFin').value,
+        criterio: document.getElementById('planifCriterio').value
+      },
+      resumen: {
+        totalPlanificado: _textoElemento('famTotalPlan', '0'),
+        familiasActuales: _textoElemento('famTotalReal', '0'),
+        cumplimiento: _textoElemento('famPct', '—'),
+        diagnosticosPlanificados: _textoElemento('diagPlanificados', '0'),
+        diagnosticosEjecutados: _textoElemento('diagEjecutados', '0'),
+        progresoDiagnosticos: _textoElemento('diagProgreso', '—')
+      },
+      familias: rango.meses.map(periodo => ({
+        mes: `${MESES[periodo.mes]} ${periodo.anio}`,
+        planificadas: famPlan[periodo.clave] || 0,
+        reportadas: famReal[periodo.clave] || 0
+      })),
+      cambiosFecha: historialCambiosFechaFin.map(cambio => ({ ...cambio }))
+    };
+    historicoPlanificaciones.unshift(snapshot);
+    actualizarAccesoHistorialArchivadas();
+    cerrarModalArchivarPlanificacion();
+    restablecerPlanificacionDespuesDeArchivo();
+  }
+
+  function restablecerPlanificacionDespuesDeArchivo() {
+    planificacionGuardada = false;
+    ['totalTrab', 'objTrab', 'famObjetivo', 'planifCriterio', 'planifFechaInicio', 'planifFechaFin'].forEach(id => {
+      document.getElementById(id).disabled = false;
+    });
+    document.getElementById('totalTrab').value = '';
+    document.getElementById('objTrab').value = '';
+    document.getElementById('famObjetivo').value = '';
+    document.getElementById('planifFechaInicio').value = '';
+    document.getElementById('planifFechaFin').value = '';
+    document.getElementById('planifCriterio').value = '';
+    Object.keys(famPlan).forEach(clave => delete famPlan[clave]);
+    Object.keys(famReal).forEach(clave => delete famReal[clave]);
+    Object.keys(famCorreoEnviado).forEach(clave => delete famCorreoEnviado[clave]);
+    historialCambiosFechaFin.splice(0);
+    document.getElementById('btnHistorialCambiosFechaFin').style.display = 'none';
+    document.getElementById('planifExtensionFechas').style.display = 'none';
+    document.getElementById('planifParametrosCorreo').style.display = '';
+    document.getElementById('planifAccionesGuardadas').style.display = 'none';
+    cerrarMenuPlanificacionArchivada();
+    const boton = document.getElementById('btnGuardarPlanificacion');
+    boton.disabled = false;
+    boton.style.opacity = '';
+    boton.style.cursor = '';
+    boton.innerHTML = '✓ Guardar Planificación';
+    calcAlcance();
+    actualizarEstadoPlanificacion();
+  }
+
+  function actualizarAccesoHistorialArchivadas() {
+    const boton = document.getElementById('btnHistorialArchivadasGlobal');
+    boton.style.display = historicoPlanificaciones.length ? '' : 'none';
+    boton.textContent = `◷ Historial (${historicoPlanificaciones.length})`;
+  }
+
+  function abrirHistorialPlanificaciones() {
+    cerrarMenuPlanificacionArchivada();
+    const contenedor = document.getElementById('planifHistoricoArchivadasLista');
+    contenedor.replaceChildren();
+    if (!historicoPlanificaciones.length) {
+      contenedor.textContent = 'Aún no hay planificaciones archivadas durante esta sesión.';
+    } else {
+      historicoPlanificaciones.forEach((snapshot, indice) => {
+        const item = document.createElement('div');
+        item.style.cssText = 'border:1px solid #d9c9e4;background:#faf5fd;padding:12px;margin-bottom:9px;border-radius:3px;display:flex;align-items:center;justify-content:space-between;gap:12px';
+        const datos = document.createElement('div');
+        const titulo = document.createElement('div');
+        titulo.style.cssText = 'font-size:12px;font-weight:700;color:var(--purple)';
+        titulo.textContent = `${snapshot.finca.cod} · ${snapshot.finca.nombre} · ${_fechaLegible(snapshot.configuracion.fechaInicio)} – ${_fechaLegible(snapshot.configuracion.fechaFin)}`;
+        const motivo = document.createElement('div');
+        motivo.style.cssText = 'font-size:11px;color:var(--muted);margin-top:4px';
+        motivo.textContent = `Archivada por: ${snapshot.motivo}`;
+        datos.append(titulo, motivo);
+        const ver = document.createElement('button');
+        ver.className = 'btn btn-outline btn-xs';
+        ver.type = 'button';
+        ver.textContent = 'Ver snapshot';
+        ver.onclick = () => verSnapshotPlanificacionArchivada(indice);
+        item.append(datos, ver);
+        contenedor.append(item);
+      });
+    }
+    document.getElementById('modalHistorialPlanificaciones').classList.add('open');
+  }
+
+  function cerrarHistorialPlanificaciones() {
+    document.getElementById('modalHistorialPlanificaciones').classList.remove('open');
+  }
+
+  function verSnapshotPlanificacionArchivada(indice) {
+    const snapshot = historicoPlanificaciones[indice];
+    if (!snapshot) return;
+    document.getElementById('planifSnapshotTitulo').textContent = `${snapshot.finca.cod} · ${snapshot.finca.nombre} — solo lectura`;
+    const resumen = document.getElementById('planifSnapshotResumen');
+    const familias = document.getElementById('planifSnapshotFamilias');
+    const cambios = document.getElementById('planifSnapshotCambiosFecha');
+    resumen.replaceChildren(); familias.replaceChildren(); cambios.replaceChildren();
+    const datos = [
+      ['Archivada el', snapshot.archivadoEn.toLocaleString('es-EC')], ['Motivo', snapshot.motivo],
+      ['Período', `${_fechaLegible(snapshot.configuracion.fechaInicio)} – ${_fechaLegible(snapshot.configuracion.fechaFin)}`],
+      ['Trabajadores', `${snapshot.configuracion.trabajadoresObjetivo} de ${snapshot.configuracion.totalTrabajadores}`],
+      ['Familias', `${snapshot.resumen.familiasActuales} reportadas de ${snapshot.resumen.totalPlanificado} planificadas`],
+      ['Diagnósticos', `${snapshot.resumen.diagnosticosEjecutados} ejecutados de ${snapshot.resumen.diagnosticosPlanificados}`]
+    ];
+    datos.forEach(([etiqueta, valor]) => {
+      const fila = document.createElement('div'); fila.style.cssText = 'padding:7px 0;border-bottom:1px solid #e8e1ed;font-size:11px';
+      const nombre = document.createElement('strong'); nombre.textContent = `${etiqueta}: `;
+      fila.append(nombre, document.createTextNode(valor)); resumen.append(fila);
+    });
+    const tabla = document.createElement('table'); tabla.style.cssText = 'width:100%;border-collapse:collapse;font-size:11px';
+    tabla.innerHTML = '<thead><tr><th style="text-align:left;padding:7px;border-bottom:1px solid #d9c9e4">Mes</th><th style="text-align:right;padding:7px;border-bottom:1px solid #d9c9e4">Planificadas</th><th style="text-align:right;padding:7px;border-bottom:1px solid #d9c9e4">Reportadas</th></tr></thead>';
+    const cuerpo = document.createElement('tbody');
+    snapshot.familias.forEach(fila => { const tr = document.createElement('tr'); [fila.mes, fila.planificadas, fila.reportadas].forEach((valor, posicion) => { const td = document.createElement('td'); td.style.cssText = `padding:7px;border-bottom:1px solid #eee;text-align:${posicion ? 'right' : 'left'}`; td.textContent = valor; tr.append(td); }); cuerpo.append(tr); });
+    tabla.append(cuerpo); familias.append(tabla);
+    if (!snapshot.cambiosFecha.length) cambios.textContent = 'No hubo cambios de fecha final.';
+    snapshot.cambiosFecha.forEach(cambio => { const fila = document.createElement('div'); fila.style.cssText = 'font-size:11px;padding:7px 0;border-bottom:1px solid #eee'; fila.textContent = `${_fechaLegible(cambio.fechaAnterior)} → ${_fechaLegible(cambio.fechaNueva)}. Motivo: ${cambio.motivo}`; cambios.append(fila); });
+    document.getElementById('modalSnapshotPlanificacion').classList.add('open');
+  }
+
+  function cerrarSnapshotPlanificacion() {
+    document.getElementById('modalSnapshotPlanificacion').classList.remove('open');
   }
 
   function renderDiagnosticos() {
@@ -3069,7 +3266,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
 
       rows += `<tr class="${rowCls}">
         <td>${mesTxt}</td>
-        <td><input class="fam-input" type="number" min="0" value="${plan||''}" placeholder="0"
+        <td><input class="fam-input" type="number" min="0" value="${plan||''}" placeholder="0" ${planificacionGuardada ? 'disabled' : ''}
               oninput="famPlan['${periodo.clave}']=+this.value;renderFamilias()"></td>
         <td><input class="fam-input" type="number" min="0"
               value="${esPasado||esActual ? (real||'') : ''}"
@@ -4710,6 +4907,42 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
       <div id="planifHistorialCambiosLista"></div>
     </div>
     <div class="modal-footer"><button class="btn btn-outline" type="button" onclick="cerrarHistorialCambiosFechaFin()">Cerrar</button></div>
+  </div>
+</div>
+
+<!-- ══ MODAL: HISTORIAL DE PLANIFICACIONES ARCHIVADAS ═════════════ -->
+<div class="modal-overlay" id="modalHistorialPlanificaciones">
+  <div class="modal" style="max-width:680px">
+    <div class="modal-header">
+      <div>
+        <h3 style="margin:0;font-size:15px;font-weight:700;color:var(--text)">Historial de planificaciones archivadas</h3>
+        <div style="font-size:12px;color:var(--muted);margin-top:2px">Registros informativos conservados durante esta sesión.</div>
+      </div>
+      <button onclick="cerrarHistorialPlanificaciones()" style="background:none;border:none;cursor:pointer;color:var(--muted);font-size:18px;line-height:1;padding:2px 6px">✕</button>
+    </div>
+    <div class="modal-body" style="padding:16px 24px;max-height:420px;overflow:auto"><div id="planifHistoricoArchivadasLista"></div></div>
+    <div class="modal-footer"><button class="btn btn-outline" type="button" onclick="cerrarHistorialPlanificaciones()">Cerrar</button></div>
+  </div>
+</div>
+
+<!-- ══ MODAL: SNAPSHOT DE PLANIFICACIÓN ARCHIVADA ═════════════════ -->
+<div class="modal-overlay" id="modalSnapshotPlanificacion">
+  <div class="modal" style="max-width:880px">
+    <div class="modal-header" style="background:#f2eafa">
+      <div>
+        <h3 style="margin:0;font-size:15px;font-weight:700;color:var(--purple)" id="planifSnapshotTitulo">Planificación archivada — solo lectura</h3>
+        <div style="font-size:12px;color:var(--muted);margin-top:2px">Snapshot histórico. No se puede editar ni interactuar.</div>
+      </div>
+      <button onclick="cerrarSnapshotPlanificacion()" style="background:none;border:none;cursor:pointer;color:var(--muted);font-size:18px;line-height:1;padding:2px 6px">✕</button>
+    </div>
+    <div class="modal-body" style="padding:18px 24px;max-height:520px;overflow:auto;background:#fcfaff">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px">
+        <section><h4 style="margin:0 0 8px;font-size:12px;color:var(--purple);text-transform:uppercase">Resumen archivado</h4><div id="planifSnapshotResumen"></div></section>
+        <section><h4 style="margin:0 0 8px;font-size:12px;color:var(--purple);text-transform:uppercase">Cambios de fecha final</h4><div id="planifSnapshotCambiosFecha"></div></section>
+      </div>
+      <section style="margin-top:20px"><h4 style="margin:0 0 8px;font-size:12px;color:var(--purple);text-transform:uppercase">Familias beneficiadas</h4><div id="planifSnapshotFamilias" style="background:#fff;border:1px solid #e2d7e9;padding:0 10px"></div></section>
+    </div>
+    <div class="modal-footer" style="background:#f8f3fb"><button class="btn btn-outline" type="button" onclick="cerrarSnapshotPlanificacion()">Cerrar vista</button></div>
   </div>
 </div>
 
