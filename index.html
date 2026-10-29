@@ -1446,14 +1446,13 @@
             </div>
             <div id="planifExtensionFechas" style="display:none;padding:10px 12px;border-bottom:1px solid var(--border);background:#faf5fd">
               <div style="display:flex;align-items:center;justify-content:space-between;gap:10px">
-                <span class="planif-label" style="width:auto">Extender fecha final</span>
+                <span class="planif-label" style="width:auto">Fecha final protegida</span>
                 <div style="display:flex;align-items:center;gap:6px">
-                  <input type="number" id="planifMesesExtension" min="1" max="24" value="1" aria-label="Meses a agregar" style="width:50px;padding:4px 6px;border:1px solid var(--border);border-radius:2px;text-align:center;font-family:'IBM Plex Mono',monospace">
-                  <span style="font-size:11px;color:var(--muted)">mes(es)</span>
-                  <button class="btn btn-outline btn-xs" type="button" onclick="agregarMesesFechaFin()">Agregar</button>
+                  <button class="btn btn-outline btn-xs" type="button" onclick="abrirModalCambioFechaFin()">Modificar fecha de finalización</button>
+                  <button class="btn btn-outline btn-xs" id="btnHistorialCambiosFechaFin" type="button" style="display:none" onclick="abrirHistorialCambiosFechaFin()">Historial de cambios</button>
                 </div>
               </div>
-              <div id="planifExtensionEstado" style="display:none;margin-top:6px;font-size:10.5px;color:#1e8449"></div>
+              <div id="planifExtensionEstado" style="margin-top:6px;font-size:10.5px;color:var(--muted)">La fecha solo se modifica registrando un motivo.</div>
             </div>
             <div class="planif-row planif-row-area">
               <span class="planif-label" style="padding-bottom:6px">Criterio de Selección<br><span class="planif-sublabel">Grupo Objetivo</span></span>
@@ -2170,6 +2169,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                  'Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
   const DIAGNOSTICOS_PLANIFICADOS = 85;
   let planificacionGuardada = false;
+  const historialCambiosFechaFin = [];
 
   // Datos por período YYYY-MM: admiten planificaciones que cruzan años.
   const famPlan = {};
@@ -2491,22 +2491,65 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
     actualizarEstadoPlanificacion();
   }
 
-  function agregarMesesFechaFin() {
+  function abrirModalCambioFechaFin() {
+    if (!planificacionGuardada) return;
+    const fechaActual = document.getElementById('planifFechaFin').value;
+    document.getElementById('planifCambioFechaFinActual').textContent = fechaActual.split('-').reverse().join('/');
+    const nuevaFecha = document.getElementById('planifCambioNuevaFechaFin');
+    nuevaFecha.min = fechaActual;
+    nuevaFecha.value = '';
+    document.getElementById('planifCambioMotivo').value = '';
+    document.getElementById('planifCambioFechaFinError').style.display = 'none';
+    document.getElementById('modalCambioFechaFin').classList.add('open');
+  }
+
+  function cerrarModalCambioFechaFin() {
+    document.getElementById('modalCambioFechaFin').classList.remove('open');
+  }
+
+  function confirmarCambioFechaFin() {
     if (!planificacionGuardada) return;
 
     const campoFin = document.getElementById('planifFechaFin');
-    const meses = parseInt(document.getElementById('planifMesesExtension').value, 10);
-    if (!campoFin?.value || !Number.isInteger(meses) || meses < 1) return;
+    const nuevaFecha = document.getElementById('planifCambioNuevaFechaFin');
+    const motivo = document.getElementById('planifCambioMotivo').value.trim();
+    const error = document.getElementById('planifCambioFechaFinError');
+    if (!campoFin?.value || !nuevaFecha?.value || nuevaFecha.value <= campoFin.value || !motivo) {
+      error.textContent = 'Selecciona una fecha posterior y registra el motivo del cambio.';
+      error.style.display = 'block';
+      return;
+    }
 
-    const [anio, mes, dia] = campoFin.value.split('-').map(Number);
-    const nuevaBase = new Date(anio, mes - 1 + meses, 1);
-    const ultimoDia = new Date(nuevaBase.getFullYear(), nuevaBase.getMonth() + 1, 0).getDate();
-    const nuevoFin = new Date(nuevaBase.getFullYear(), nuevaBase.getMonth(), Math.min(dia, ultimoDia));
-    campoFin.value = `${nuevoFin.getFullYear()}-${String(nuevoFin.getMonth() + 1).padStart(2, '0')}-${String(nuevoFin.getDate()).padStart(2, '0')}`;
-
-    document.getElementById('planifExtensionEstado').textContent = `Fecha final extendida ${meses} ${meses === 1 ? 'mes' : 'meses'}.`;
-    document.getElementById('planifExtensionEstado').style.display = 'block';
+    const fechaAnterior = campoFin.value;
+    campoFin.value = nuevaFecha.value;
+    historialCambiosFechaFin.push({ fechaAnterior, fechaNueva:nuevaFecha.value, motivo, registradoEn:new Date() });
+    document.getElementById('btnHistorialCambiosFechaFin').style.display = '';
+    document.getElementById('planifExtensionEstado').textContent = 'Fecha final actualizada y motivo registrado en el historial.';
+    document.getElementById('planifExtensionEstado').style.color = '#1e8449';
+    cerrarModalCambioFechaFin();
     actualizarEstadoPlanificacion();
+  }
+
+  function abrirHistorialCambiosFechaFin() {
+    const contenedor = document.getElementById('planifHistorialCambiosLista');
+    contenedor.replaceChildren();
+    historialCambiosFechaFin.forEach((cambio, indice) => {
+      const item = document.createElement('div');
+      item.style.cssText = 'padding:10px 0;border-bottom:1px solid var(--border)';
+      const titulo = document.createElement('div');
+      titulo.style.cssText = 'font-size:12px;font-weight:700;color:var(--text)';
+      titulo.textContent = `${indice + 1}. ${cambio.fechaAnterior.split('-').reverse().join('/')} → ${cambio.fechaNueva.split('-').reverse().join('/')}`;
+      const detalle = document.createElement('div');
+      detalle.style.cssText = 'font-size:11px;color:var(--muted);margin-top:4px';
+      detalle.textContent = `Motivo: ${cambio.motivo}`;
+      item.append(titulo, detalle);
+      contenedor.append(item);
+    });
+    document.getElementById('modalHistorialCambiosFechaFin').classList.add('open');
+  }
+
+  function cerrarHistorialCambiosFechaFin() {
+    document.getElementById('modalHistorialCambiosFechaFin').classList.remove('open');
   }
 
   function renderDiagnosticos() {
@@ -4624,6 +4667,51 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
 
   </div>
 </div><!-- /modal inicio planificación -->
+
+<!-- ══ MODAL: CAMBIO DE FECHA FINAL ═══════════════════════════════ -->
+<div class="modal-overlay" id="modalCambioFechaFin">
+  <div class="modal" style="max-width:480px">
+    <div class="modal-header">
+      <div>
+        <h3 style="margin:0;font-size:15px;font-weight:700;color:var(--text)">Modificar fecha de finalización</h3>
+        <div style="font-size:12px;color:var(--muted);margin-top:2px">Fecha final actual: <span id="planifCambioFechaFinActual">—</span></div>
+      </div>
+      <button onclick="cerrarModalCambioFechaFin()" style="background:none;border:none;cursor:pointer;color:var(--muted);font-size:18px;line-height:1;padding:2px 6px">✕</button>
+    </div>
+    <div class="modal-body" style="padding:20px 24px">
+      <div class="form-field">
+        <label class="form-label">Nueva fecha final <span style="color:#e74c3c">*</span></label>
+        <input type="date" id="planifCambioNuevaFechaFin" class="planif-input" style="width:100%;text-align:left;padding-right:8px">
+      </div>
+      <div class="form-field" style="margin-top:14px">
+        <label class="form-label">Motivo de la extensión <span style="color:#e74c3c">*</span></label>
+        <textarea id="planifCambioMotivo" class="planif-textarea" style="min-height:90px" placeholder="Ej.: Se requiere ampliar el período por disponibilidad de familias..."></textarea>
+      </div>
+      <div id="planifCambioFechaFinError" style="display:none;margin-top:6px;font-size:11px;color:#c0392b"></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" type="button" onclick="cerrarModalCambioFechaFin()">Cancelar</button>
+      <button class="btn btn-primary" type="button" onclick="confirmarCambioFechaFin()">Registrar cambio</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ MODAL: HISTORIAL DE CAMBIOS DE FECHA ═══════════════════════ -->
+<div class="modal-overlay" id="modalHistorialCambiosFechaFin">
+  <div class="modal" style="max-width:520px">
+    <div class="modal-header">
+      <div>
+        <h3 style="margin:0;font-size:15px;font-weight:700;color:var(--text)">Historial de cambios de fecha final</h3>
+        <div style="font-size:12px;color:var(--muted);margin-top:2px">Registros conservados durante esta sesión.</div>
+      </div>
+      <button onclick="cerrarHistorialCambiosFechaFin()" style="background:none;border:none;cursor:pointer;color:var(--muted);font-size:18px;line-height:1;padding:2px 6px">✕</button>
+    </div>
+    <div class="modal-body" style="padding:12px 24px 20px;max-height:360px;overflow:auto">
+      <div id="planifHistorialCambiosLista"></div>
+    </div>
+    <div class="modal-footer"><button class="btn btn-outline" type="button" onclick="cerrarHistorialCambiosFechaFin()">Cerrar</button></div>
+  </div>
+</div>
 
 <!-- ══ MODAL: ARCHIVAR PLANIFICACIÓN ═══════════════════════════════ -->
 <div class="modal-overlay" id="modalArchivarPlanificacion">
