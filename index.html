@@ -2317,7 +2317,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
     configuracion['!autofilter'] = { ref:'A1:C6' };
 
     const planMensual = XLSX.utils.aoa_to_sheet([
-      ['Mes (opcional)', 'Familias planificadas'],
+      ['Mes (AAAA-MM)', 'Familias planificadas'],
       ...Array.from({ length:36 }, () => ['', ''])
     ]);
     planMensual['!cols'] = [{ wch:24 }, { wch:24 }];
@@ -2350,6 +2350,27 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
   function _numeroPlantilla(valor) {
     const numero = Number(String(valor ?? '').trim().replace(',', '.'));
     return Number.isFinite(numero) ? numero : 0;
+  }
+
+  function _claveMesPlantilla(valor) {
+    const fecha = _fechaExcelAISO(valor);
+    if (fecha) return fecha.slice(0, 7);
+    const texto = String(valor ?? '').trim().toLowerCase();
+    if (/^\d{4}[\/-]\d{1,2}$/.test(texto)) {
+      const [anio, mes] = texto.split(/[\/-]/).map(Number);
+      return mes >= 1 && mes <= 12 ? `${anio}-${String(mes).padStart(2, '0')}` : '';
+    }
+    const coincidencia = texto.match(/^([a-záéíóúñ]+)\s+(\d{4})$/i);
+    if (!coincidencia) return '';
+    const nombreMes = coincidencia[1].normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+    const indice = MESES.map(mes => mes.toLowerCase()).indexOf(nombreMes);
+    return indice >= 0 ? `${coincidencia[2]}-${String(indice + 1).padStart(2, '0')}` : '';
+  }
+
+  function _metaMensualPlantilla(valor) {
+    if (valor === '' || valor === null || valor === undefined) return null;
+    const numero = Number(String(valor).trim().replace(',', '.'));
+    return Number.isInteger(numero) && numero >= 0 ? numero : null;
   }
 
   function cargarPlanificacionMasiva(archivo) {
@@ -2398,13 +2419,23 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
         document.getElementById('planifFechaFin').value = fechaFinPrev;
         if (!rango) throw new Error('Las fechas configuradas no permiten generar el período mensual.');
 
-        const metas = [];
-        rango.meses.forEach((_, indice) => {
-          const celda = hojaMensual[`B${indice + 2}`];
-          const valor = celda ? _numeroPlantilla(celda.v) : 0;
-          if (valor < 0 || !Number.isInteger(valor)) throw new Error(`La fila ${indice + 2} de Plan mensual debe contener un número entero mayor o igual a cero.`);
-          metas.push(valor);
+        const clavesPeriodo = new Set(rango.meses.map(periodo => periodo.clave));
+        const metasPorMes = new Map();
+        const filasMensuales = XLSX.utils.sheet_to_json(hojaMensual, { header:1, defval:'', raw:true });
+        filasMensuales.slice(1).forEach((fila, indice) => {
+          const numeroFila = indice + 2;
+          const mes = _claveMesPlantilla(fila[0]);
+          const meta = _metaMensualPlantilla(fila[1]);
+          if (fila[0] === '' && fila[1] === '') return;
+          if (!mes) throw new Error(`La fila ${numeroFila} de Plan mensual debe indicar un mes válido (AAAA-MM).`);
+          if (meta === null) throw new Error(`La fila ${numeroFila} de Plan mensual debe contener una cantidad entera mayor o igual a cero.`);
+          if (!clavesPeriodo.has(mes)) throw new Error(`El mes ${mes} de la fila ${numeroFila} está fuera del período configurado.`);
+          if (metasPorMes.has(mes)) throw new Error(`El mes ${mes} está repetido en Plan mensual.`);
+          metasPorMes.set(mes, meta);
         });
+        const mesesFaltantes = rango.meses.filter(periodo => !metasPorMes.has(periodo.clave));
+        if (mesesFaltantes.length) throw new Error(`Faltan metas para: ${mesesFaltantes.map(periodo => periodo.clave).join(', ')}.`);
+        const metas = rango.meses.map(periodo => metasPorMes.get(periodo.clave));
 
         document.getElementById('totalTrab').value = totalTrabajadores;
         document.getElementById('objTrab').value = trabajadoresObjetivo;
@@ -2499,6 +2530,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
     document.getElementById('planifParametrosCorreo').style.display = 'none';
     document.getElementById('planifExtensionFechas').style.display = 'block';
     document.getElementById('planifAccionesGuardadas').style.display = 'block';
+    document.getElementById('btnCargaMasivaPlanificacion').style.display = 'none';
 
     const boton = document.getElementById('btnGuardarPlanificacion');
     boton.disabled = true;
@@ -2665,6 +2697,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
     document.getElementById('planifExtensionFechas').style.display = 'none';
     document.getElementById('planifParametrosCorreo').style.display = '';
     document.getElementById('planifAccionesGuardadas').style.display = 'none';
+    document.getElementById('btnCargaMasivaPlanificacion').style.display = '';
     cerrarMenuPlanificacionArchivada();
     const boton = document.getElementById('btnGuardarPlanificacion');
     boton.disabled = false;
@@ -4983,12 +5016,12 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
     <div class="modal-body" style="padding:20px 24px">
       <div class="alert alert-blue" style="margin-bottom:16px">
         <span class="alert-icon">ℹ</span>
-        <span class="alert-text">La plantilla tiene dos hojas: <strong>Configuración</strong> para los parámetros y <strong>Plan mensual</strong> para registrar manualmente las familias. Al cargarla, el sistema genera los meses usando las fechas ingresadas.</span>
+        <span class="alert-text">La plantilla tiene dos hojas: <strong>Configuración</strong> para los parámetros y <strong>Plan mensual</strong> para registrar cada mes en formato <strong>AAAA-MM</strong> y su cantidad de familias. Al cargarla, el sistema valida y muestra la tabla mensual.</span>
       </div>
       <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;padding:11px 12px;border:1px solid #d9c9e4;background:#faf5fd;border-radius:4px">
         <div>
           <div style="font-size:12px;font-weight:700;color:var(--purple)">1. Descargar plantilla</div>
-          <div style="font-size:10.5px;color:var(--muted);margin-top:2px">Usa la columna <strong>Ejemplo</strong> como guía y completa los datos en la columna <strong>Valor</strong>.</div>
+          <div style="font-size:10.5px;color:var(--muted);margin-top:2px">Completa <strong>Valor</strong> y registra todos los meses del período en la segunda hoja.</div>
         </div>
         <button class="btn btn-outline btn-xs" type="button" onclick="descargarPlantillaCargaMasivaPlanificacion()">↓ Descargar</button>
       </div>
