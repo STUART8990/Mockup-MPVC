@@ -1260,7 +1260,7 @@
               <tr>
                 <td class="td-code">001</td>
                 <td><input class="inline-input" value="MATRIZ" style="min-width:120px"></td>
-                <td><input class="inline-input" value="PRINCIPAL" style="min-width:120px"></td>
+                <td><input class="inline-input" value="PRINCIPAL" style="min-width:12                                                                                         0px"></td>
                 <td><input class="inline-input" value="" placeholder="Nombre para programa" style="min-width:150px"></td>
                 <td><input class="inline-input" value="cumbaya la primavera" style="min-width:150px"></td>
                 <td><input class="inline-input" value="PICHINCHA" style="min-width:95px"></td>
@@ -1360,6 +1360,9 @@
       </a>
     </div>
     <div class="page-actions">
+      <button class="btn btn-primary btn-sm" id="btnCargaMasivaPlanificacion" type="button" onclick="abrirCargaMasivaPlanificacion()" disabled title="Selecciona una finca para cargar una planificación">
+        ↑ Carga masiva
+      </button>
       <span id="fincaBadge" style="font-size:12px;color:var(--muted);padding:6px 10px;background:#f2f2f2;border:1px solid var(--border);border-radius:2px">
         Selecciona una finca desde la tabla
       </span>
@@ -1454,7 +1457,7 @@
             </div>
             <div class="planif-row planif-row-area">
               <span class="planif-label" style="padding-bottom:6px">Criterio de Selección<br><span class="planif-sublabel">Grupo Objetivo</span></span>
-              <textarea class="planif-textarea" id="planifCriterio" placeholder="Describa el criterio de selección del grupo objetivo para este programa...">Trabajadores de área de postcosecha y cultivo con más de 6 meses de antigüedad y que no hayan participado en programas PMCV anteriores.</textarea>
+              <textarea id="planifCriterio" class="planif-textarea" placeholder="Describa el criterio de selección del grupo objetivo para este programa...">Trabajadores de área de postcosecha y cultivo con más de 6 meses de antigüedad y que no hayan participado en programas PMCV anteriores.</textarea>
             </div>
 
             <div style="padding:10px 12px 12px">
@@ -1486,7 +1489,7 @@
               <!-- Nota de observación -->
               <div class="form-field">
                 <label class="form-label">Nota de Observación</label>
-                <textarea class="planif-textarea" id="planifNota" style="min-height:70px" placeholder="Escriba una nota adicional que se incluirá al final del correo de notificación automática..."></textarea>
+                <textarea class="planif-textarea" style="min-height:70px" placeholder="Escriba una nota adicional que se incluirá al final del correo de notificación automática..."></textarea>
                 <span style="font-size:10.5px;color:var(--muted-light);margin-top:3px">Esta nota se adjuntará como párrafo final en el correo de recordatorio.</span>
               </div>
             </div>
@@ -1494,14 +1497,11 @@
           </div>
           <div class="form-footer">
             <button class="btn btn-outline">Cancelar</button>
-            <button class="btn btn-outline" id="btnVerHistorialPlanificaciones" type="button" onclick="toggleHistorialPlanificaciones()">Historial (0)</button>
-            <button class="btn btn-outline" id="btnArchivarPlanificacion" type="button" onclick="archivarPlanificacion()" disabled style="color:#6c3483;border-color:#d9c9e4">Archivar</button>
             <button class="btn btn-primary" id="btnGuardarPlanificacion" type="button" onclick="guardarPlanificacion()">
               <svg width="13" height="13" viewBox="0 0 14 14" fill="none"><path d="M2 7l3.5 3.5L12 3.5" stroke="#fff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
               Guardar Planificación
             </button>
           </div>
-          <div id="historialPlanificaciones" style="display:none;border-top:1px solid var(--border);padding:10px 12px;background:#fafafa"></div>
         </div>
 
       </div><!-- /ROW 1 -->
@@ -1521,7 +1521,7 @@
               <label style="font-size:11px;color:var(--muted);white-space:nowrap">Total planificado:</label>
               <input type="number" id="famObjetivo" value="300" min="1"
                 style="width:68px;padding:3px 6px;border:1px solid var(--border);border-radius:2px;font-size:13px;font-family:'IBM Plex Mono',monospace;font-weight:700;text-align:center;color:var(--purple)"
-                onchange="renderFamilias()">
+                oninput="renderFamilias()">
               <span style="font-size:11px;color:var(--muted)">familias</span>
               <span id="famDiffBadge" style="display:none;font-size:10.5px;padding:2px 7px;border-radius:2px;font-weight:700"></span>
             </div>
@@ -2114,17 +2114,31 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
 
   /* ─── § A · NAVEGACIÓN DE PANTALLAS ───────────────────── */
 
+  let fincaPlanificacionActual = null;
+
+  function establecerFincaPlanificacion(fincaCod, fincaNombre) {
+    fincaPlanificacionActual = { cod: fincaCod, nombre: fincaNombre };
+    document.getElementById('fincaBadge').innerHTML =
+      '<strong style="color:var(--purple)">' + fincaCod + '</strong> · ' + fincaNombre;
+    const cargaMasiva = document.getElementById('btnCargaMasivaPlanificacion');
+    cargaMasiva.disabled = false;
+    cargaMasiva.title = `Cargar planificación para ${fincaCod} · ${fincaNombre}`;
+    const fincaPlan = document.getElementById('implFincaActual');
+    if (fincaPlan) fincaPlan.textContent = fincaCod + ' · ' + fincaNombre;
+  }
+
     function showScreen(n, fincaCod, fincaNombre) {
     document.querySelectorAll('.screen').forEach(s => s.classList.remove('visible'));
     document.getElementById('screen' + n).classList.add('visible');
     document.getElementById('btnS1').classList.toggle('active', n === 1);
     document.getElementById('btnS2').classList.toggle('active', n === 2);
     document.getElementById('btnS3').classList.toggle('active', n === 3);
-    if (n === 2 && fincaCod) {
-      document.getElementById('fincaBadge').innerHTML =
-        '<strong style="color:var(--purple)">' + fincaCod + '</strong> · ' + fincaNombre;
-      const fincaPlan = document.getElementById('implFincaActual');
-      if (fincaPlan) fincaPlan.textContent = fincaCod + ' · ' + fincaNombre;
+    if (n === 2) {
+      // En la navegación de demostración se abre la primera finca activa por defecto.
+      const finca = fincaCod
+        ? { cod:fincaCod, nombre:fincaNombre }
+        : fincaPlanificacionActual || { cod:'001', nombre:'MATRIZ' };
+      establecerFincaPlanificacion(finca.cod, finca.nombre);
     }
   }
 
@@ -2156,8 +2170,6 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
                  'Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
   const DIAGNOSTICOS_PLANIFICADOS = 85;
   let planificacionGuardada = false;
-  const historicoPlanificaciones = [];
-  const CRITERIO_PLANIFICACION_DEFAULT = 'Trabajadores de área de postcosecha y cultivo con más de 6 meses de antigüedad y que no hayan participado en programas PMCV anteriores.';
 
   // Datos por período YYYY-MM: admiten planificaciones que cruzan años.
   const famPlan = {};
@@ -2267,6 +2279,145 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
     document.getElementById('planifDocNombre').textContent = file.name;
   }
 
+  /* ── CARGA MASIVA DE PLANIFICACIÓN (finca actual) ── */
+  function abrirCargaMasivaPlanificacion() {
+    if (!fincaPlanificacionActual) return;
+    const estado = document.getElementById('cargaMasivaPlanifEstado');
+    estado.style.display = 'none';
+    document.getElementById('cargaMasivaPlanifArchivo').value = '';
+    document.getElementById('cargaMasivaPlanifFinca').textContent = `${fincaPlanificacionActual.cod} · ${fincaPlanificacionActual.nombre}`;
+    document.getElementById('modalCargaMasivaPlanificacion').classList.add('open');
+  }
+
+  function cerrarCargaMasivaPlanificacion() {
+    document.getElementById('modalCargaMasivaPlanificacion').classList.remove('open');
+  }
+
+  function descargarPlantillaCargaMasivaPlanificacion() {
+    const configuracion = XLSX.utils.aoa_to_sheet([
+      ['Campo', 'Valor', 'Ejemplo'],
+      ['Total trabajadores Finca', 200, '200'],
+      ['Trabajadores Objetivo (Alcance)', 170, '170'],
+      ['Fecha Inicio', '', '01/01/2027'],
+      ['Fecha Fin', '', '01/11/2027'],
+      ['Criterio de Selección', '', 'Trabajadores de postcosecha y cultivo con más de 6 meses de antigüedad.'],
+    ]);
+    configuracion['!cols'] = [{ wch:34 }, { wch:72 }, { wch:28 }];
+    configuracion['!autofilter'] = { ref:'A1:C6' };
+
+    const planMensual = XLSX.utils.aoa_to_sheet([
+      ['Mes (opcional)', 'Familias planificadas'],
+      ...Array.from({ length:36 }, () => ['', ''])
+    ]);
+    planMensual['!cols'] = [{ wch:24 }, { wch:24 }];
+    planMensual['!autofilter'] = { ref:'A1:B37' };
+
+    const encabezado = { font:{ bold:true, color:{ rgb:'FFFFFF' } }, fill:{ patternType:'solid', fgColor:{ rgb:'5D2B6E' } }, alignment:{ horizontal:'center' } };
+    ['A1','B1'].forEach(celda => { planMensual[celda].s = encabezado; });
+    ['A1','B1','C1'].forEach(celda => { configuracion[celda].s = encabezado; });
+
+    const libro = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(libro, configuracion, 'Configuración');
+    XLSX.utils.book_append_sheet(libro, planMensual, 'Plan mensual');
+    XLSX.writeFile(libro, 'plantilla_planificacion_pmcv.xlsx', { cellStyles:true });
+  }
+
+  function _fechaExcelAISO(valor) {
+    if (valor instanceof Date && !Number.isNaN(valor.getTime())) {
+      return `${valor.getFullYear()}-${String(valor.getMonth() + 1).padStart(2, '0')}-${String(valor.getDate()).padStart(2, '0')}`;
+    }
+    if (typeof valor === 'number') {
+      const fecha = XLSX.SSF.parse_date_code(valor);
+      if (fecha) return `${fecha.y}-${String(fecha.m).padStart(2, '0')}-${String(fecha.d).padStart(2, '0')}`;
+    }
+    const texto = String(valor || '').trim();
+    if (/^\d{4}-\d{2}-\d{2}$/.test(texto)) return texto;
+    const partes = texto.match(/^(\d{1,2})[\/-](\d{1,2})[\/-](\d{4})$/);
+    return partes ? `${partes[3]}-${String(partes[2]).padStart(2, '0')}-${String(partes[1]).padStart(2, '0')}` : '';
+  }
+
+  function _numeroPlantilla(valor) {
+    const numero = Number(String(valor ?? '').trim().replace(',', '.'));
+    return Number.isFinite(numero) ? numero : 0;
+  }
+
+  function cargarPlanificacionMasiva(archivo) {
+    if (!archivo) return;
+    const estado = document.getElementById('cargaMasivaPlanifEstado');
+    const input = document.getElementById('cargaMasivaPlanifArchivo');
+    if (planificacionGuardada) {
+      estado.textContent = 'Archiva la planificación actual antes de importar una nueva.';
+      estado.style.cssText = 'display:block;margin-top:10px;font-size:11px;color:#c0392b';
+      input.value = '';
+      return;
+    }
+    if (archivo.size > 2 * 1024 * 1024 || !/\.(xlsx|xls)$/i.test(archivo.name)) {
+      estado.textContent = 'Selecciona un archivo Excel válido (.xlsx o .xls) de hasta 2 MB.';
+      estado.style.cssText = 'display:block;margin-top:10px;font-size:11px;color:#c0392b';
+      input.value = '';
+      return;
+    }
+
+    const lector = new FileReader();
+    lector.onload = ({ target }) => {
+      try {
+        const libro = XLSX.read(new Uint8Array(target.result), { type:'array', cellDates:true });
+        const hojaConfiguracion = libro.Sheets['Configuración'] || libro.Sheets[libro.SheetNames[0]];
+        const hojaMensual = libro.Sheets['Plan mensual'] || libro.Sheets[libro.SheetNames[1]];
+        if (!hojaConfiguracion || !hojaMensual) throw new Error('El archivo debe contener las hojas Configuración y Plan mensual.');
+
+        const filasConfiguracion = XLSX.utils.sheet_to_json(hojaConfiguracion, { header:1, defval:'', raw:true });
+        const config = {};
+        filasConfiguracion.slice(1).forEach(fila => { config[String(fila[0] || '').trim().toLowerCase()] = fila[1]; });
+        const totalTrabajadores = _numeroPlantilla(config['total trabajadores finca']);
+        const trabajadoresObjetivo = _numeroPlantilla(config['trabajadores objetivo (alcance)']);
+        const fechaInicio = _fechaExcelAISO(config['fecha inicio']);
+        const fechaFin = _fechaExcelAISO(config['fecha fin']);
+        const criterio = String(config['criterio de selección'] || '').trim();
+        if (totalTrabajadores <= 0 || trabajadoresObjetivo < 0 || trabajadoresObjetivo > totalTrabajadores || !fechaInicio || !fechaFin || fechaInicio > fechaFin || !criterio) {
+          throw new Error('Revisa la hoja Configuración: completa todos los campos y verifica que el alcance no supere al total de trabajadores.');
+        }
+
+        const fechaInicioPrev = document.getElementById('planifFechaInicio').value;
+        const fechaFinPrev = document.getElementById('planifFechaFin').value;
+        document.getElementById('planifFechaInicio').value = fechaInicio;
+        document.getElementById('planifFechaFin').value = fechaFin;
+        const rango = famRango();
+        document.getElementById('planifFechaInicio').value = fechaInicioPrev;
+        document.getElementById('planifFechaFin').value = fechaFinPrev;
+        if (!rango) throw new Error('Las fechas configuradas no permiten generar el período mensual.');
+
+        const metas = [];
+        rango.meses.forEach((_, indice) => {
+          const celda = hojaMensual[`B${indice + 2}`];
+          const valor = celda ? _numeroPlantilla(celda.v) : 0;
+          if (valor < 0 || !Number.isInteger(valor)) throw new Error(`La fila ${indice + 2} de Plan mensual debe contener un número entero mayor o igual a cero.`);
+          metas.push(valor);
+        });
+
+        document.getElementById('totalTrab').value = totalTrabajadores;
+        document.getElementById('objTrab').value = trabajadoresObjetivo;
+        document.getElementById('planifFechaInicio').value = fechaInicio;
+        document.getElementById('planifFechaFin').value = fechaFin;
+        document.getElementById('planifCriterio').value = criterio;
+        Object.keys(famPlan).forEach(clave => delete famPlan[clave]);
+        Object.keys(famReal).forEach(clave => delete famReal[clave]);
+        rango.meses.forEach((periodo, indice) => { famPlan[periodo.clave] = metas[indice]; });
+        document.getElementById('famObjetivo').value = metas.reduce((total, meta) => total + meta, 0);
+        calcAlcance();
+        actualizarEstadoPlanificacion();
+        estado.textContent = `Planificación cargada para ${fincaPlanificacionActual.cod} · ${fincaPlanificacionActual.nombre}. Se generaron ${rango.meses.length} mes(es).`;
+        estado.style.cssText = 'display:block;margin-top:10px;font-size:11px;color:#1e8449';
+      } catch (error) {
+        estado.textContent = error.message || 'No se pudo leer la plantilla.';
+        estado.style.cssText = 'display:block;margin-top:10px;font-size:11px;color:#c0392b';
+      } finally {
+        input.value = '';
+      }
+    };
+    lector.readAsArrayBuffer(archivo);
+  }
+
   /* Devuelve cada mes del período, incluso si cruza de un año al siguiente. */
   function famRango() {
     const inicio = document.getElementById('planifFechaInicio')?.value;
@@ -2337,156 +2488,7 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
     boton.style.opacity = '.72';
     boton.style.cursor = 'default';
     boton.innerHTML = '✓ Planificación guardada';
-    document.getElementById('btnArchivarPlanificacion').disabled = false;
     actualizarEstadoPlanificacion();
-  }
-
-  function archivarPlanificacion() {
-    if (!planificacionGuardada) return;
-
-    const motivo = document.getElementById('planifMotivoArchivo');
-    motivo.value = '';
-    document.getElementById('planifMotivoArchivoError').style.display = 'none';
-    document.getElementById('modalArchivarPlanificacion').classList.add('open');
-    setTimeout(() => motivo.focus(), 0);
-  }
-
-  function cerrarModalArchivarPlanificacion() {
-    document.getElementById('modalArchivarPlanificacion').classList.remove('open');
-  }
-
-  function confirmarArchivadoPlanificacion() {
-    const motivo = document.getElementById('planifMotivoArchivo').value.trim();
-    if (!motivo) {
-      document.getElementById('planifMotivoArchivoError').style.display = 'block';
-      return;
-    }
-
-    const archivo = document.getElementById('planifDocNombre').textContent;
-    historicoPlanificaciones.unshift({
-      archivadaEl: new Date().toLocaleString('es-EC'),
-      motivo,
-      fechaInicio: document.getElementById('planifFechaInicio').value,
-      fechaFin: document.getElementById('planifFechaFin').value,
-      totalTrabajadores: document.getElementById('totalTrab').value,
-      trabajadoresObjetivo: document.getElementById('objTrab').value,
-      familiasObjetivo: document.getElementById('famObjetivo').value,
-      criterio: document.getElementById('planifCriterio').value,
-      nota: document.getElementById('planifNota').value,
-      adjunto: archivo,
-      metasMensuales: { ...famPlan },
-      familiasReportadas: { ...famReal },
-      correosEnviados: { ...famCorreoEnviado },
-    });
-
-    Object.keys(famPlan).forEach(clave => delete famPlan[clave]);
-    Object.keys(famReal).forEach(clave => delete famReal[clave]);
-    Object.keys(famCorreoEnviado).forEach(clave => delete famCorreoEnviado[clave]);
-
-    planificacionGuardada = false;
-    document.getElementById('planifFechaInicio').value = '';
-    document.getElementById('planifFechaFin').value = '';
-    document.getElementById('planifFechaInicio').disabled = false;
-    document.getElementById('planifFechaFin').disabled = false;
-    document.getElementById('totalTrab').value = '200';
-    document.getElementById('objTrab').value = '170';
-    document.getElementById('famObjetivo').value = '300';
-    document.getElementById('planifCriterio').value = CRITERIO_PLANIFICACION_DEFAULT;
-    document.getElementById('planifNota').value = '';
-    document.getElementById('planifDocNombre').textContent = 'Consentimiento_Firma_Finca.docx';
-    document.getElementById('planifDocInput').value = '';
-    document.getElementById('planifMesesExtension').value = '1';
-    document.getElementById('planifExtensionFechas').style.display = 'none';
-    document.getElementById('planifExtensionEstado').style.display = 'none';
-
-    const guardar = document.getElementById('btnGuardarPlanificacion');
-    guardar.disabled = false;
-    guardar.style.opacity = '';
-    guardar.style.cursor = '';
-    guardar.innerHTML = '<svg width="13" height="13" viewBox="0 0 14 14" fill="none"><path d="M2 7l3.5 3.5L12 3.5" stroke="#fff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg> Guardar Planificación';
-    document.getElementById('btnArchivarPlanificacion').disabled = true;
-
-    calcAlcance();
-    actualizarEstadoPlanificacion();
-    renderHistorialPlanificaciones();
-    cerrarModalArchivarPlanificacion();
-  }
-
-  function toggleHistorialPlanificaciones() {
-    const historial = document.getElementById('historialPlanificaciones');
-    renderHistorialPlanificaciones();
-    historial.style.display = historial.style.display === 'none' ? 'block' : 'none';
-  }
-
-  function renderHistorialPlanificaciones() {
-    const historial = document.getElementById('historialPlanificaciones');
-    const boton = document.getElementById('btnVerHistorialPlanificaciones');
-    boton.textContent = `Historial (${historicoPlanificaciones.length})`;
-    historial.replaceChildren();
-
-    if (!historicoPlanificaciones.length) {
-      historial.textContent = 'Aún no hay planificaciones archivadas en esta sesión.';
-      return;
-    }
-
-    const titulo = document.createElement('div');
-    titulo.textContent = 'Planificaciones archivadas en esta sesión';
-    titulo.style.cssText = 'font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.4px;margin-bottom:6px';
-    historial.append(titulo);
-    historicoPlanificaciones.forEach((planificacion, indice) => {
-      const totalMeta = Object.values(planificacion.metasMensuales).reduce((total, valor) => total + (Number(valor) || 0), 0);
-      const totalActual = Object.values(planificacion.familiasReportadas).reduce((total, valor) => total + (Number(valor) || 0), 0);
-      const porcentaje = totalMeta ? Math.round(totalActual / totalMeta * 100) : 0;
-      const periodo = planificacion.fechaInicio && planificacion.fechaFin ? `${planificacion.fechaInicio} → ${planificacion.fechaFin}` : 'Sin período';
-
-      const ficha = document.createElement('div');
-      ficha.style.cssText = 'border-top:1px solid var(--border);padding:8px 0';
-      const cabecera = document.createElement('button');
-      cabecera.type = 'button';
-      cabecera.style.cssText = 'width:100%;display:flex;justify-content:space-between;gap:10px;align-items:center;background:none;border:0;padding:0;text-align:left;cursor:pointer;color:var(--text)';
-      const resumen = document.createElement('span');
-      resumen.textContent = `${historicoPlanificaciones.length - indice}. ${periodo}`;
-      resumen.style.fontWeight = '700';
-      const metricas = document.createElement('span');
-      metricas.textContent = `${totalActual}/${totalMeta} familias · ${porcentaje}%`;
-      metricas.style.cssText = 'font-family:IBM Plex Mono,monospace;color:var(--purple);white-space:nowrap';
-      cabecera.append(resumen, metricas);
-
-      const detalle = document.createElement('div');
-      detalle.style.cssText = 'display:none;margin-top:8px;padding:9px;background:#fff;border:1px solid var(--border);border-radius:3px;line-height:1.5';
-      const datos = [
-        ['Archivada', planificacion.archivadaEl],
-        ['Motivo', planificacion.motivo],
-        ['Total trabajadores', planificacion.totalTrabajadores],
-        ['Trabajadores objetivo', planificacion.trabajadoresObjetivo],
-        ['Familias meta declaradas', planificacion.familiasObjetivo],
-        ['Criterio', planificacion.criterio || '—'],
-        ['Adjunto', planificacion.adjunto],
-        ['Nota', planificacion.nota || '—'],
-      ];
-      datos.forEach(([etiqueta, valor]) => {
-        const linea = document.createElement('div');
-        const tituloDato = document.createElement('strong');
-        tituloDato.textContent = `${etiqueta}: `;
-        linea.append(tituloDato, document.createTextNode(String(valor)));
-        detalle.append(linea);
-      });
-
-      const subtitulo = document.createElement('div');
-      subtitulo.textContent = 'Metas y familias al momento de archivar';
-      subtitulo.style.cssText = 'font-weight:700;margin-top:8px;font-size:10.5px;text-transform:uppercase;color:var(--muted)';
-      detalle.append(subtitulo);
-      Object.keys(planificacion.metasMensuales).sort().forEach(clave => {
-        const [anio, mes] = clave.split('-').map(Number);
-        const linea = document.createElement('div');
-        linea.textContent = `${MESES[mes - 1]} ${anio}: meta ${planificacion.metasMensuales[clave] || 0} · actual ${planificacion.familiasReportadas[clave] || 0}`;
-        detalle.append(linea);
-      });
-
-      cabecera.onclick = () => { detalle.style.display = detalle.style.display === 'none' ? 'block' : 'none'; };
-      ficha.append(cabecera, detalle);
-      historial.append(ficha);
-    });
   }
 
   function agregarMesesFechaFin() {
@@ -3025,12 +3027,12 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
       rows += `<tr class="${rowCls}">
         <td>${mesTxt}</td>
         <td><input class="fam-input" type="number" min="0" value="${plan||''}" placeholder="0"
-              onchange="famPlan['${periodo.clave}']=+this.value;renderFamilias()"></td>
+              oninput="famPlan['${periodo.clave}']=+this.value;renderFamilias()"></td>
         <td><input class="fam-input" type="number" min="0"
               value="${esPasado||esActual ? (real||'') : ''}"
               placeholder="${esPasado||esActual?'0':'—'}"
               ${!esPasado&&!esActual?'readonly':''}
-              onchange="famReal['${periodo.clave}']=+this.value;renderFamilias()"></td>
+              oninput="famReal['${periodo.clave}']=+this.value;renderFamilias()"></td>
         <td><span class="fam-badge ${est.cls}">${est.txt}</span></td>
         <td style="text-align:center">
           <button class="fam-mail-btn${famCorreoEnviado[periodo.clave] ? ' sent' : ''}"
@@ -3432,128 +3434,6 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
   function quitarMentor(cod, pid) {
     asignaciones[cod].mentores = (asignaciones[cod].mentores||[]).filter(x=>x!==pid);
     renderFincas(); updateCard3Badges();
-  }
-
-  /* ── CARGA MASIVA: líderes y mentores por finca ── */
-  function descargarPlantillaLideresMentores() {
-    const headers = ['Código finca', 'Nombre', 'Apellido', 'Cargo', 'Correo', 'Teléfono'];
-    const rows = [['001', '', '', '', '', '']];
-    _descargarExcel('plantilla_carga_masiva_lideres_mentores.xlsx', headers, rows, 'Asignaciones PMCV');
-  }
-
-  function _normalizarCabeceraCargaMasiva(valor) {
-    return String(valor || '').trim().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/\s+/g, ' ');
-  }
-
-  function _normalizarFilaCargaMasiva(fila) {
-    const datos = {};
-    Object.entries(fila).forEach(([clave, valor]) => { datos[_normalizarCabeceraCargaMasiva(clave)] = String(valor || '').trim(); });
-    return {
-      finca: String(datos['codigo finca'] || datos.finca || '').trim(),
-      nombre: String(datos.nombre || '').trim(),
-      apellido: String(datos.apellido || '').trim(),
-      cargo: String(datos.cargo || '').trim(),
-      correo: String(datos.correo || datos.email || '').trim(),
-      tel: String(datos.telefono || datos['teléfono'] || datos.tel || '').trim(),
-    };
-  }
-
-  function _fincaCargaMasiva(valor) {
-    const texto = String(valor || '').trim().toUpperCase();
-    return fincasCat.find(f => f.cod === texto || f.nombre.toUpperCase() === texto);
-  }
-
-  function _personaCargaMasiva(fila) {
-    const correo = fila.correo.toLowerCase();
-    return personas.find(p => (correo && p.correo?.toLowerCase() === correo) ||
-      (p.nombre.toLowerCase() === fila.nombre.toLowerCase() && p.apellido.toLowerCase() === fila.apellido.toLowerCase()));
-  }
-
-  function _nuevaPersonaCargaMasiva(fila) {
-    const mayorId = personas.reduce((mayor, p) => Math.max(mayor, parseInt(String(p.id).replace(/\D/g, ''), 10) || 0), 0);
-    const persona = {
-      id: `P${String(mayorId + 1).padStart(2, '0')}`,
-      nombre: fila.nombre, apellido: fila.apellido, cargo: fila.cargo,
-      correo: fila.correo, tel: fila.tel, usuario: _generarUsuarioCargaMasiva(fila),
-    };
-    personas.push(persona);
-    nextPersonaId = Math.max(nextPersonaId, mayorId + 1);
-    return persona;
-  }
-
-  function _generarUsuarioCargaMasiva(fila) {
-    const simplificar = texto => String(texto || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-zA-Z0-9]/g, '').toLowerCase();
-    const base = `${simplificar(fila.nombre).charAt(0)}${simplificar(fila.apellido)}` || 'usuario';
-    let candidato = base;
-    let sufijo = 2;
-    while (personas.some(p => p.usuario?.toLowerCase() === candidato)) candidato = `${base}${sufijo++}`;
-    return candidato;
-  }
-
-  function cargarMasivoLideresMentores(archivo) {
-    const input = document.getElementById('cargaMasivaLideresInput');
-    if (!archivo) return;
-    const estado = document.getElementById('cargaMasivaLideresEstado');
-    const lector = new FileReader();
-    lector.onload = ({ target }) => {
-      try {
-        const libro = XLSX.read(new Uint8Array(target.result), { type: 'array' });
-        const hoja = libro.Sheets[libro.SheetNames[0]];
-        const filas = XLSX.utils.sheet_to_json(hoja, { defval: '' }).map(_normalizarFilaCargaMasiva)
-          .filter(fila => fila.finca || fila.nombre || fila.apellido);
-        if (!filas.length) throw new Error('La plantilla no contiene filas con datos.');
-
-        let personasCreadas = 0;
-        let asignacionesCreadas = 0;
-        const errores = [];
-
-        filas.forEach((fila, indice) => {
-          const numeroFila = indice + 2;
-          const finca = _fincaCargaMasiva(fila.finca);
-          if (!finca || !fila.nombre || !fila.apellido) {
-            errores.push(`Fila ${numeroFila}: Código finca, nombre y apellido son obligatorios.`);
-            return;
-          }
-          if (fila.correo && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(fila.correo)) {
-            errores.push(`Fila ${numeroFila}: correo no válido.`);
-            return;
-          }
-
-          const asignacion = asignaciones[finca.cod] || (asignaciones[finca.cod] = { lider:null, mentores:[] });
-          let persona = _personaCargaMasiva(fila);
-          const rol = asignacion.lider ? 'mentor' : 'lider';
-          if (persona && rol === 'lider' && liderFincasCount(persona.id) >= 2) {
-            errores.push(`Fila ${numeroFila}: ${fila.nombre} ${fila.apellido} ya tiene el máximo de 2 fincas como líder.`);
-            return;
-          }
-
-          if (!persona) {
-            persona = _nuevaPersonaCargaMasiva(fila);
-            personasCreadas++;
-          }
-
-          if (rol === 'lider') {
-            if (asignacion.lider !== persona.id) { asignacion.lider = persona.id; asignacionesCreadas++; }
-          } else if (!asignacion.mentores.includes(persona.id)) {
-            asignacion.mentores.push(persona.id);
-            asignacionesCreadas++;
-          }
-        });
-
-        renderFincas();
-        if (typeof renderPersonasList === 'function') renderPersonasList();
-        estado.style.display = 'block';
-        estado.style.color = errores.length ? '#b7770d' : '#1e8449';
-        estado.textContent = `Importación completada: ${personasCreadas} persona(s) creada(s), ${asignacionesCreadas} asignación(es).${errores.length ? ` Se omitieron ${errores.length} fila(s): ${errores.slice(0, 2).join(' ')}` : ''}`;
-      } catch (error) {
-        estado.style.display = 'block';
-        estado.style.color = '#c0392b';
-        estado.textContent = error.message || 'No se pudo leer el archivo. Usa la plantilla Excel o un CSV válido.';
-      } finally {
-        input.value = '';
-      }
-    };
-    lector.readAsArrayBuffer(archivo);
   }
 
   /* ── VISTA: ASIGNAR ROL ── */
@@ -4323,16 +4203,6 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
   <!-- ════ VISTA: POR FINCA ════ -->
   <div id="drawerViewFincas" style="display:flex;flex-direction:column;flex:1;overflow:hidden">
     <div class="drawer-body" style="overflow-y:auto">
-      <div style="margin-bottom:12px;padding:10px;border:1px solid #d9c9e4;background:#faf5fd;border-radius:4px">
-        <div style="font-size:11px;font-weight:700;color:var(--purple);text-transform:uppercase;letter-spacing:.4px;margin-bottom:6px">Carga masiva de líderes y mentores</div>
-        <div style="font-size:11px;color:var(--muted);line-height:1.4;margin-bottom:9px">Descarga la plantilla y completa una fila por persona. El sistema genera el usuario y asigna automáticamente el primer registro sin líder como líder; los siguientes serán mentores.</div>
-        <div style="display:flex;gap:6px;flex-wrap:wrap">
-          <button class="btn btn-outline btn-xs" type="button" onclick="descargarPlantillaLideresMentores()">↓ Descargar plantilla</button>
-          <button class="btn btn-primary btn-xs" type="button" onclick="document.getElementById('cargaMasivaLideresInput').click()">↑ Cargar archivo</button>
-          <input id="cargaMasivaLideresInput" type="file" accept=".xlsx,.xls,.csv" style="display:none" onchange="cargarMasivoLideresMentores(this.files[0])">
-        </div>
-        <div id="cargaMasivaLideresEstado" aria-live="polite" style="display:none;margin-top:8px;font-size:10.5px;line-height:1.4"></div>
-      </div>
       <div id="fincaAccordion"></div>
       <button class="btn-asignar-vacio" style="margin-top:4px;border-style:solid;color:var(--purple);border-color:var(--purple)"
         onclick="drawerShowFormPersona(null,'finca')">
@@ -4766,13 +4636,9 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
       <button onclick="cerrarModalArchivarPlanificacion()" style="background:none;border:none;cursor:pointer;color:var(--muted);font-size:18px;line-height:1;padding:2px 6px">✕</button>
     </div>
     <div class="modal-body" style="padding:20px 24px">
-      <div class="alert alert-blue" style="margin-bottom:16px">
-        <span class="alert-icon">ℹ</span>
-        <span class="alert-text">Se guardarán las fechas, métricas, metas mensuales, avances, notas y adjunto de esta planificación.</span>
-      </div>
       <div class="form-field">
         <label class="form-label">Motivo de archivo <span style="color:#e74c3c">*</span></label>
-        <textarea id="planifMotivoArchivo" class="planif-textarea" style="min-height:90px" placeholder="Ej.: Planificación concluida, reemplazada por una nueva versión, cambio de alcance..."></textarea>
+        <textarea id="planifMotivoArchivo" class="planif-textarea" style="min-height:90px" placeholder="Ej.: Planificación concluida, reemplazada por una nueva versión..."></textarea>
         <div id="planifMotivoArchivoError" style="display:none;margin-top:5px;font-size:11px;color:#c0392b">Debes ingresar el motivo para archivar esta planificación.</div>
       </div>
     </div>
@@ -4781,7 +4647,41 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
       <button class="btn btn-primary" type="button" onclick="confirmarArchivadoPlanificacion()">Archivar planificación</button>
     </div>
   </div>
-</div><!-- /modal archivar planificación -->
+</div>
+
+<!-- ══ MODAL: CARGA MASIVA DE PLANIFICACIÓN ═══════════════════════ -->
+<div class="modal-overlay" id="modalCargaMasivaPlanificacion">
+  <div class="modal" style="max-width:520px">
+    <div class="modal-header">
+      <div>
+        <h3 style="margin:0;font-size:15px;font-weight:700;color:var(--text)">Carga masiva de planificación</h3>
+        <div style="font-size:12px;color:var(--muted);margin-top:2px">Finca: <span id="cargaMasivaPlanifFinca">—</span></div>
+      </div>
+      <button onclick="cerrarCargaMasivaPlanificacion()" style="background:none;border:none;cursor:pointer;color:var(--muted);font-size:18px;line-height:1;padding:2px 6px">✕</button>
+    </div>
+    <div class="modal-body" style="padding:20px 24px">
+      <div class="alert alert-blue" style="margin-bottom:16px">
+        <span class="alert-icon">ℹ</span>
+        <span class="alert-text">La plantilla tiene dos hojas: <strong>Configuración</strong> para los parámetros y <strong>Plan mensual</strong> para registrar manualmente las familias. Al cargarla, el sistema genera los meses usando las fechas ingresadas.</span>
+      </div>
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;padding:11px 12px;border:1px solid #d9c9e4;background:#faf5fd;border-radius:4px">
+        <div>
+          <div style="font-size:12px;font-weight:700;color:var(--purple)">1. Descargar plantilla</div>
+          <div style="font-size:10.5px;color:var(--muted);margin-top:2px">Usa la columna <strong>Ejemplo</strong> como guía y completa los datos en la columna <strong>Valor</strong>.</div>
+        </div>
+        <button class="btn btn-outline btn-xs" type="button" onclick="descargarPlantillaCargaMasivaPlanificacion()">↓ Descargar</button>
+      </div>
+      <div style="margin-top:10px;padding:11px 12px;border:1px solid var(--border);border-radius:4px">
+        <div style="font-size:12px;font-weight:700;color:var(--text)">2. Cargar plantilla completada</div>
+        <div style="font-size:10.5px;color:var(--muted);margin:2px 0 8px">Archivo Excel (.xlsx o .xls), máximo 2 MB.</div>
+        <button class="btn btn-primary btn-xs" type="button" onclick="document.getElementById('cargaMasivaPlanifArchivo').click()">↑ Seleccionar archivo</button>
+        <input id="cargaMasivaPlanifArchivo" type="file" accept=".xlsx,.xls" style="display:none" onchange="cargarPlanificacionMasiva(this.files[0])">
+      </div>
+      <div id="cargaMasivaPlanifEstado" aria-live="polite" style="display:none"></div>
+    </div>
+    <div class="modal-footer"><button class="btn btn-outline" onclick="cerrarCargaMasivaPlanificacion()">Cerrar</button></div>
+  </div>
+</div>
 
 </body>
 </html>
